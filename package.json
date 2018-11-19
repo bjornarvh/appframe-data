@@ -1,0 +1,42 @@
+{
+  "name": "appframe-data-object",
+  "version": "0.1.0",
+  "description": "An implementation of data objects for AppframeWeb applications.",
+  "main": "appframe-data-object.js",
+  "scripts": {
+    "build": "npm run build:test && npm run build:prod",
+    "build:test": "node --experimental-modules rollup.mjs",
+    "build:prod": "node --experimental-modules rollup.mjs --prod",
+    "publish": "npm run publish:test && npm run publish:prod",
+    "publish:test": "npx appframe publish --mode test --config appframe.config.js",
+    "publish:prod": "npx appframe publish --mode production --config appframe.config.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bjornarvh/appframe-data-object.git"
+  },
+  "keywords": [
+    "appframe",
+    "appframeweb"
+  ],
+  "author": "Bjørnar Vister Hansen <bvh@olenbetong.no>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bjornarvh/appframe-data-object/issues"
+  },
+  "homepage": "https://github.com/bjornarvh/appframe-data-object#readme",
+  "dependencies": {
+    "eventemitter3": "^3.1.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.1.6",
+    "@babel/preset-env": "^7.1.6",
+    "@bjornarvh/appframe-cli": "^1.1.6",
+    "dotenv": "^6.1.0",
+    "eslint": "^5.9.0",
+    "minimist": "^1.2.0",
+    "rollup": "^0.67.3",
+    "rollup-plugin-babel": "^4.0.3",
+    "rollup-plugin-babel-minify": "^6.1.1"
+  }
+}
