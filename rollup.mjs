@@ -6,7 +6,7 @@ import babel from 'rollup-plugin-babel';
 import minify from 'rollup-plugin-babel-minify';
 
 const args = minimist(process.argv.slice(2));
-const baseName = 'appframe-data-object';
+const baseName = 'data-object';
 
 function babelPlugin(format) {
 	if (format === 'esm') {
@@ -41,7 +41,7 @@ async function build(format) {
 	}
 
 	const inputOptions = {
-		input: 'appframe-data-object.js',
+		input: 'data-object.js',
 		plugins
 	};
 
