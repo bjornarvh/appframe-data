@@ -81,7 +81,7 @@ DataHandler.prototype.request = function request(type, data, callback) {
 			isTimedOut = true;
 		}, this.timeout);
 	
-		return fetch(url, options)
+		fetch(url, options)
 			.then(result => {
 				clearTimeout(timeout);
 				if (isTimedOut || (controller && this.previousRequestController !== controller)) {
@@ -93,7 +93,7 @@ DataHandler.prototype.request = function request(type, data, callback) {
 			.then(json => {
 				if (json.hasOwnProperty('success')) {
 					fireCallback(callback, null, json.success);
-					resolve(json.success);;
+					resolve(json.success);
 				} else if (json.hasOwnProperty('error')) {
 					fireCallback(callback, null, json.error);
 					reject(json.error);
