@@ -6,7 +6,6 @@ import babel from 'rollup-plugin-babel';
 import minify from 'rollup-plugin-babel-minify';
 
 const args = minimist(process.argv.slice(2));
-const baseName = 'data-object';
 
 function babelPlugin(format) {
 	if (format === 'esm') {
@@ -30,7 +29,7 @@ function babelPlugin(format) {
 	return babel();
 }
 
-async function build(format) {
+async function build(format, file) {
 	const fileExt = args.prod ? `${format}.min.js` : `${format}.js`;
 	const plugins = [
 		babelPlugin(format)
@@ -41,12 +40,12 @@ async function build(format) {
 	}
 
 	const inputOptions = {
-		input: 'data-object.js',
+		input: file + '.js',
 		plugins
 	};
 
 	const outputOptions = {
-		file: `dist/${baseName}.${fileExt}`,
+		file: `dist/${file}.${fileExt}`,
 		format,
 		name: 'getLocalizedString'
 	};
@@ -57,10 +56,12 @@ async function build(format) {
 }
 
 async function buildAll() {
-	console.log('Building ESM build...');
-	await build('esm');
-	console.log('Building UMD build...');
-	await build('umd');
+	console.log('Building ESM builds...');
+	await build('esm', 'data-handler');
+	await build('esm', 'data-object');
+	console.log('Building UMD builds...');
+	await build('umd', 'data-handler');
+	await build('umd', 'data-object');
 }
 
 buildAll();
