@@ -29,7 +29,7 @@ function babelPlugin(format) {
 	return babel();
 }
 
-async function build(format, file) {
+async function build(format, file, libName) {
 	const fileExt = args.prod ? `${format}.min.js` : `${format}.js`;
 	const plugins = [
 		babelPlugin(format)
@@ -40,14 +40,14 @@ async function build(format, file) {
 	}
 
 	const inputOptions = {
-		input: file + '.js',
+		input: `./src/${file}.js`,
 		plugins
 	};
 
 	const outputOptions = {
 		file: `dist/${file}.${fileExt}`,
 		format,
-		name: 'getLocalizedString'
+		name: libName
 	};
 
 	const bundle = await rollup.rollup(inputOptions);
@@ -57,11 +57,11 @@ async function build(format, file) {
 
 async function buildAll() {
 	console.log('Building ESM builds...');
-	await build('esm', 'data-handler');
-	await build('esm', 'data-object');
+	await build('esm', 'data-handler', 'DataHandler');
+	await build('esm', 'data-object', 'DataHandler');
 	console.log('Building UMD builds...');
-	await build('umd', 'data-handler');
-	await build('umd', 'data-object');
+	await build('umd', 'data-handler', 'DataObject');
+	await build('umd', 'data-object', 'DataObject');
 }
 
 buildAll();
