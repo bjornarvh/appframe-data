@@ -79,19 +79,22 @@ DataHandler.prototype.request = function request(type, data, callback) {
 			}
 
 			isTimedOut = true;
+			resolve(false);
 		}, this.timeout);
 	
 		fetch(url, options)
 			.then(result => {
 				clearTimeout(timeout);
 				if (isTimedOut || (controller && this.previousRequestController !== controller)) {
-					throw new Error('Aborted');
+					return false;
 				}
 	
 				return result.json();
 			})
 			.then(json => {
-				if (json.hasOwnProperty('success')) {
+				if (json === false) {
+					resolve(false);
+				} else if (json.hasOwnProperty('success')) {
 					fireCallback(callback, null, json.success);
 					resolve(json.success);
 				} else if (json.hasOwnProperty('error')) {
@@ -101,11 +104,10 @@ DataHandler.prototype.request = function request(type, data, callback) {
 			})
 			.catch(error => {
 				if (error.message === 'Aborted' || (window.AbortError && error instanceof window.AbortError)) {
-					reject('Request aborted');
-					return;
+					resolve(false);
+				} else {
+					reject(error);
 				}
-	
-				reject(error);
 			});
 	});
 };
