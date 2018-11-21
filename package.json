@@ -30,8 +30,10 @@
   },
   "devDependencies": {
     "@babel/core": "^7.1.6",
+    "@babel/plugin-proposal-class-properties": "^7.1.0",
     "@babel/preset-env": "^7.1.6",
     "@bjornarvh/appframe-cli": "^1.1.6",
+    "babel-eslint": "^10.0.1",
     "dotenv": "^6.1.0",
     "eslint": "^5.9.0",
     "minimist": "^1.2.0",
