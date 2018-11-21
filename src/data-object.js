@@ -4,13 +4,15 @@ import DataHandler from './data-handler';
 import MemoryStorage from './memory-storage';
 import { fireCallback } from './common';
 
+const af = typeof window !== 'undefined' ? window.af : {};
+
 const defaultOptions = {
 	dataHandler: null,
-	articleId: window.af && window.af.article && window.af.article.id,
+	articleId: af && af.article && af.article.id,
 	dataSourceId: null,
 	timeout: 30000,
 	errorHandler: function(error, callback) {
-		window.alert(error);
+		alert(error);
 		fireCallback(callback, error, null);
 	},
 	linkFields: null,
@@ -26,14 +28,14 @@ const defaultOptions = {
 	hasIUTrig: false,
 	hasIDTrig: false,
 	parameters: {
-		filterString: '',
-		whereClause: '',
-		filterObject: null,
-		whereObject: null,
-		sortOrder: [],
-		maxRecords: -1,
 		distinctRows: false,
-		masterChildCriteria: {}
+		filterObject: null,
+		filterString: '',
+		masterChildCriteria: {},
+		maxRecords: -1,
+		sortOrder: [],
+		whereObject: null,
+		whereClause: '',
 	},
 	systemFieldNames: {},
 	masterDataObject: null,
@@ -43,44 +45,44 @@ const defaultOptions = {
 };
 
 class DataObject extends EventEmitter {
-	#dataHandler;
-	#storageEngine = new MemoryStorage();
-	#options;
-	#fieldNames = [];
-	#parametersChanged = false;
-	#currentIndex = null;
-	#errorRecords ={};
-	#dirtyRecords = {};
-	#savingRecords = {};
-	#newRecord = {};
-	#dataLoaded = null;
-	#dataSaving = false;
-	#dataLoading = false;
-	#temporarilyDisallowDelete = false;
-	#temporarilyDisallowUpdate = false;
-	#temporarilyDisallowInsert = false;
+	_dataHandler;
+	_storageEngine = new MemoryStorage();
+	_options;
+	_fieldNames = [];
+	_parametersChanged = false;
+	_currentIndex = null;
+	_errorRecords ={};
+	_dirtyRecords = {};
+	_savingRecords = {};
+	_newRecord = {};
+	_dataLoaded = null;
+	_dataSaving = false;
+	_dataLoading = false;
+	_temporarilyDisallowDelete = false;
+	_temporarilyDisallowUpdate = false;
+	_temporarilyDisallowInsert = false;
 
 	constructor(options) {
 		super();
 
-		this.#options = Object.assign({}, defaultOptions, options);
+		this._options = Object.assign({}, defaultOptions, options);
 
 		if (options.parameters) {
-			this.#options.parameters = Object.assign(
+			this._options.parameters = Object.assign(
 				{},
 				defaultOptions.parameters,
 				options.parameters
 			);
 		}
 
-		this.#dataHandler = options.dataHandler || new DataHandler({
+		this._dataHandler = options.dataHandler || new DataHandler({
 			articleId: options.articleId,
 			dataSourceId: options.dataSourceId,
 			timeout: options.timeout
-		})
+		});
 
-		delete this.#options.dataHandler;
-		delete this.#options.storageEngine;
+		delete this._options.dataHandler;
+		delete this._options.storageEngine;
 
 		this.initialize();
 	}
@@ -125,6 +127,19 @@ class DataObject extends EventEmitter {
 		this.initialize = function() {
 			console.warn(`Data object ${this.dataSourceId} has already been initialized.`);
 		};
+
+		// Create a recordsource field. Not really needed, but commonly used in afDataObject,
+		// so good to have for compatability
+		this.recordSource = {};
+		const rsFields = Object
+			.keys(this._options.parameters)
+			.filter(key => !['distinctRows', 'masterChildCriteria'].includes(key));
+		
+		for (let field of rsFields) {
+			let name = field.substring(0, 1).toUpperCase() + field.substring(3);
+			this.recordSource[`get${name}`] = () => this.getParameter(field);
+			this.recordSource[`set${name}`] = (value) => this.setParameter(field, value);
+		}
 	}
 
 	isDataLoaded() {}
@@ -156,11 +171,11 @@ class DataObject extends EventEmitter {
 	getFieldsAsync() {}
 
 	getMasterDataObject() {
-		return this.#options.masterDataObject;
+		return this._options.masterDataObject;
 	}
 
 	getParameter(parameter) {
-		return this.#options.parameters[parameter] || null;
+		return this._options.parameters[parameter] || null;
 	}
 
 	refreshCurrentRow(callback) {
@@ -190,7 +205,7 @@ class DataObject extends EventEmitter {
 	setParameter(parameter, value) {
 		const isFilterStringParam = ['filterString', 'whereClause'].includes(parameter);
 
-		if (this.#options.strict && isFilterStringParam) {
+		if (this._options.strict && isFilterStringParam) {
 			throw new Error(`Setting ${parameter} is not allowed when dataObject is in strict mode`);
 		}
 
@@ -202,15 +217,12 @@ class DataObject extends EventEmitter {
 			this.setParameter(parameter === 'filterString' ? 'filterObject' : 'whereObject', null);
 		}
 
-		const current = this.#options.parameters[parameter];
+		const current = this._options.parameters[parameter];
 		if (current !== value) {
-			this.#options.parameters[parameter] = value;
+			this._options.parameters[parameter] = value;
 			this.emit('onParameterUpdated', parameter);
 		}
 	}
 }
-
-
-
 
 export default DataObject;
