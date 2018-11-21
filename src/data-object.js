@@ -65,6 +65,14 @@ class DataObject extends EventEmitter {
 
 		this.#options = Object.assign({}, defaultOptions, options);
 
+		if (options.parameters) {
+			this.#options.parameters = Object.assign(
+				{},
+				defaultOptions.parameters,
+				options.parameters
+			);
+		}
+
 		this.#dataHandler = options.dataHandler || new DataHandler({
 			articleId: options.articleId,
 			dataSourceId: options.dataSourceId,
@@ -147,7 +155,13 @@ class DataObject extends EventEmitter {
 
 	getFieldsAsync() {}
 
-	getParameter(parameter) {}
+	getMasterDataObject() {
+		return this.#options.masterDataObject;
+	}
+
+	getParameter(parameter) {
+		return this.#options.parameters[parameter] || null;
+	}
 
 	refreshCurrentRow(callback) {
 		return new Promise((resolve, reject) => {
@@ -173,7 +187,27 @@ class DataObject extends EventEmitter {
 
 	setAllowInsert(allow) {}
 
-	setParameter(parameter, value) {}
+	setParameter(parameter, value) {
+		const isFilterStringParam = ['filterString', 'whereClause'].includes(parameter);
+
+		if (this.#options.strict && isFilterStringParam) {
+			throw new Error(`Setting ${parameter} is not allowed when dataObject is in strict mode`);
+		}
+
+		if (isFilterStringParam) {
+			if (!value) {
+				value = '';
+			}
+			
+			this.setParameter(parameter === 'filterString' ? 'filterObject' : 'whereObject', null);
+		}
+
+		const current = this.#options.parameters[parameter];
+		if (current !== value) {
+			this.#options.parameters[parameter] = value;
+			this.emit('onParameterUpdated', parameter);
+		}
+	}
 }
 
 
