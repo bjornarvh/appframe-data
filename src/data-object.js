@@ -4,11 +4,9 @@ import DataHandler from './data-handler';
 import MemoryStorage from './memory-storage';
 import { fireCallback } from './common';
 
-const af = typeof window !== 'undefined' ? window.af : {};
-
 const defaultOptions = {
 	dataHandler: null,
-	articleId: af && af.article && af.article.id,
+	articleId: global.af && global.af.article && global.af.article.id,
 	dataSourceId: null,
 	timeout: 30000,
 	errorHandler: function(error, callback) {
@@ -164,11 +162,15 @@ class DataObject extends EventEmitter {
 
 	getDataLength() {}
 
-	getDataSourceId() {}
+	getDataSourceId() {
+		return this._options.dataSourceId;
+	}
 
 	getFields() {}
 
-	getFieldsAsync() {}
+	getFieldsAsync() {
+		return Promise.resolve([]);
+	}
 
 	getMasterDataObject() {
 		return this._options.masterDataObject;
@@ -225,4 +227,8 @@ class DataObject extends EventEmitter {
 	}
 }
 
-export default DataObject;
+export {
+	DataObject,
+	DataHandler,
+	MemoryStorage
+};

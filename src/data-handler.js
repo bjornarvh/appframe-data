@@ -12,8 +12,8 @@ class DataHandler {
 
 		if (articleId) {
 			this.articleId = articleId;
-		} else if (window.af && window.af.article) {
-			this.articleId = window.af.article.id;
+		} else if (global.af && global.af.article) {
+			this.articleId = af.article.id;
 		}
 
 		this.dataSourceId = dataSourceId || null;
@@ -60,12 +60,12 @@ class DataHandler {
 				url += '/' + this.groupBy;
 			}
 		
-			if (window.AbortController) {
+			if (AbortController) {
 				if (this.previousRequestController) {
 					this.previousRequestController.abort();
 				}
 		
-				controller = new window.AbortController();
+				controller = new AbortController();
 				this.previousRequestController = controller;
 				options.signal = this.previousRequestController.signal;
 			}
@@ -100,7 +100,7 @@ class DataHandler {
 					}
 				})
 				.catch(error => {
-					if (error.message === 'Aborted' || (window.AbortError && error instanceof window.AbortError)) {
+					if (error.message === 'Aborted' || (global.AbortError && error instanceof global.AbortError)) {
 						resolve(false);
 					} else {
 						reject(error);
