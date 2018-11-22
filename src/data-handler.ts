@@ -1,4 +1,5 @@
 import { fireCallback } from './common';
+import { Af, IDataHandler } from '../types';
 
 interface DataHandlerOptions {
 	articleId? : string,
@@ -8,18 +9,10 @@ interface DataHandlerOptions {
 	timeout? : number
 }
 
-interface Af {
-	article: AfArticle
-}
-
-interface AfArticle {
-	id: string
-}
-
 declare const af : Af;
 declare const AbortError : Function;
 
-class DataHandler {
+class DataHandler implements IDataHandler {
 	articleId : string;
 	dataSourceId : string | null;
 	fields : Array<string> | null;
