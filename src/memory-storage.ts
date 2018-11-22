@@ -1,4 +1,4 @@
-export default class MemoryStorage {
+export class MemoryStorage {
 	data : Array<object> = [];
 
 	create(record : object) : number {

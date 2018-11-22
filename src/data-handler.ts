@@ -1,5 +1,10 @@
 import { fireCallback } from './common';
-import { Af, IDataHandler, IRecordDataOptions, IDataObjectParameters } from '../types';
+import {
+	Af,
+	IDataHandler,
+	IRecordDataOptions,
+	IDataObjectParameters
+} from '../types';
 
 interface DataHandlerOptions {
 	articleId? : string,
@@ -155,7 +160,5 @@ class DataHandler implements IDataHandler {
 		});
 	}
 }
-
-
 
 export default DataHandler;

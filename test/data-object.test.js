@@ -1,43 +1,47 @@
-/* eslint-env node */
 const { DataObject } = require('../src/data-object');
+global.fetch = require('jest-fetch-mock');
 
-global.af = {
-	article: {
-		id: 'test'
-	}
-};
-
-test('Data object gets correct ID', () => {
-	const dataObject = new DataObject({
-		dataSourceId: 'dsTestObject'
+describe('DataObject', () => {
+	beforeEach(() => {
+		fetch.resetMocks();
 	});
 
-	expect(dataObject.getDataSourceId()).toBe('dsTestObject');
-});
+	it('gets correct ID', () => {
+		const dataObject = new DataObject({
+			dataSourceId: 'dsTestObject'
+		});
 
-test('Data object gets recordSource helper', () => {
-	const dataObject = new DataObject({});
-	const params = [
-		['filterObject', 'getFilterObject', 'setFilterObject'],
-		['filterString', 'getFilterString', 'setFilterString'],
-		['maxRecords', 'getMaxRecords', 'setMaxRecords'],
-		['sortOrder', 'getSortOrder', 'setSortOrder'],
-		['whereClause', 'getWhereClause', 'setWhereClause'],
-		['whereObject', 'getWhereObject', 'setWhereObject'],
-	];
+		expect(dataObject.getDataSourceId()).toBe('dsTestObject');
 
-	for (let param of params) {
-		const [name, getter, setter] = param;
-		const value = Math.random();
-		const value2 = Math.random();
+		// check that data object gets article from af.article.id
+		// global is defined in jest config
+		expect(dataObject._options.articleId).toBe('test-article');
+	});
 
-		expect(getter in dataObject.recordSource).toBe(true);
-		expect(setter in dataObject.recordSource).toBe(true);
+	test('has a functioning recordSource helper', () => {
+		const dataObject = new DataObject({});
+		const params = [
+			['filterObject', 'getFilterObject', 'setFilterObject'],
+			['filterString', 'getFilterString', 'setFilterString'],
+			['maxRecords', 'getMaxRecords', 'setMaxRecords'],
+			['sortOrder', 'getSortOrder', 'setSortOrder'],
+			['whereClause', 'getWhereClause', 'setWhereClause'],
+			['whereObject', 'getWhereObject', 'setWhereObject'],
+		];
 
-		dataObject.setParameter(name, value);
-		expect(dataObject.recordSource[getter]()).toBe(value);
+		for (let param of params) {
+			const [name, getter, setter] = param;
+			const value = Math.random();
+			const value2 = Math.random();
 
-		dataObject.recordSource[setter](value2);
-		expect(dataObject.getParameter(name)).toBe(value2);
-	}
+			expect(getter in dataObject.recordSource).toBe(true);
+			expect(setter in dataObject.recordSource).toBe(true);
+
+			dataObject.setParameter(name, value);
+			expect(dataObject.recordSource[getter]()).toBe(value);
+
+			dataObject.recordSource[setter](value2);
+			expect(dataObject.getParameter(name)).toBe(value2);
+		}
+	});
 });
