@@ -1,5 +1,5 @@
 import { fireCallback } from './common';
-import { Af, IDataHandler, IRecordDataOptions } from '../types';
+import { Af, IDataHandler, IRecordDataOptions, IDataObjectParameters } from '../types';
 
 interface DataHandlerOptions {
 	articleId? : string,
@@ -69,7 +69,7 @@ class DataHandler implements IDataHandler {
 	 * @param data Request parameters
 	 * @param callback Callback when the record has been created/an error has occured
 	 */
-	retrieve(data : object, callback : Function) : Promise<object | boolean> {
+	retrieve(data : IDataObjectParameters, callback : Function) : Promise<object | boolean> {
 		return this.request('retrieve', data, callback);
 	}
 	
