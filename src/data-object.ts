@@ -72,19 +72,19 @@ class DataObject extends EventEmitter implements IDataObject {
 
 	recordSource : IRecordSource = {
 		getFilterObject: () => this.getParameter('filterObject'),
-		setFilterObject: (value : object | null) => this.setParameter('filterObject', value),
 		getFilterString: () => this.getParameter('filterString'),
-		setFilterString: (value : string) => this.setParameter('filterString', value),
-		getMasterChildCriteria: () => this.getParameter('masterChildCriteria'),
-		setMasterChildCriteria: (value : number) => this.setParameter('masterChildCriteria', value),
 		getMaxRecords: () => this.getParameter('maxRecords'),
-		setMaxRecords: (value : number) => this.setParameter('maxRecords', value),
+		getMasterChildCriteria: () => this.getParameter('masterChildCriteria'),
 		getSortOrder: () => this.getParameter('sortOrder'),
-		setSortOrder: (value : Array<object>) => this.setParameter('sortOrder', value),
-		getWhereObject: () => this.getParameter('whereObject'),
-		setWhereObject: (value : object | null) => this.setParameter('whereObject', value),
 		getWhereClause: () => this.getParameter('whereClause'),
+		getWhereObject: () => this.getParameter('whereObject'),
+		setFilterObject: (value : object | null) => this.setParameter('filterObject', value),
+		setFilterString: (value : string) => this.setParameter('filterString', value),
+		setMaxRecords: (value : number) => this.setParameter('maxRecords', value),
+		setMasterChildCriteria: (value : number) => this.setParameter('masterChildCriteria', value),
+		setSortOrder: (value : Array<object>) => this.setParameter('sortOrder', value),
 		setWhereClause: (value : string) => this.setParameter('whereClause', value),
+		setWhereObject: (value : object | null) => this.setParameter('whereObject', value),
 	};
 
 	constructor(options : IDataObjectOptions) {

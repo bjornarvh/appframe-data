@@ -1,4 +1,4 @@
-import { fireCallback } from '../src/common';
+const { fireCallback } = require('../src/common');
 
 test('Callback is called with correct arguments in fireCallback', () => {
 	let firstArg = '';

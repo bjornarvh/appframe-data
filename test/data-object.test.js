@@ -1,6 +1,5 @@
 /* eslint-env node */
-/* eslint-disable no-undef */
-import { DataObject } from '../src/data-object';
+const { DataObject } = require('../src/data-object');
 
 global.af = {
 	article: {
@@ -18,19 +17,27 @@ test('Data object gets correct ID', () => {
 
 test('Data object gets recordSource helper', () => {
 	const dataObject = new DataObject({});
-	const params = ['FilterString', 'FilterObject', 'WhereClause', 'WhereObject', 'MaxRecords', 'SortOrder'];
+	const params = [
+		['filterObject', 'getFilterObject', 'setFilterObject'],
+		['filterString', 'getFilterString', 'setFilterString'],
+		['maxRecords', 'getMaxRecords', 'setMaxRecords'],
+		['sortOrder', 'getSortOrder', 'setSortOrder'],
+		['whereClause', 'getWhereClause', 'setWhereClause'],
+		['whereObject', 'getWhereObject', 'setWhereObject'],
+	];
 
 	for (let param of params) {
-		const actualParam = param.substring(0, 1).toLowerCase() + param.substring(1);
+		const [name, getter, setter] = param;
 		const value = Math.random();
-		expect(`set${param}` in dataObject.recordSource).toBe(true);
-		expect(`get${param}` in dataObject.recordSource).toBe(true);
-
-		dataObject.setParameter(actualParam, value);
-		expect(dataObject.recordSource[`get${param}`]()).toBe(value);
-
 		const value2 = Math.random();
-		dataObject.recordSource[`set${param}`](value2);
-		expect(dataObject.getParameter(actualParam)).toBe(value2);
+
+		expect(getter in dataObject.recordSource).toBe(true);
+		expect(setter in dataObject.recordSource).toBe(true);
+
+		dataObject.setParameter(name, value);
+		expect(dataObject.recordSource[getter]()).toBe(value);
+
+		dataObject.recordSource[setter](value2);
+		expect(dataObject.getParameter(name)).toBe(value2);
 	}
 });
