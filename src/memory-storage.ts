@@ -1,6 +1,7 @@
 export default class MemoryStorage {
-	data = [];
-	create(record) {
+	data : Array<object> = [];
+
+	create(record : object) : number {
 		if (typeof record !== 'object') {
 			throw new TypeError('Record must be an object');
 		}
@@ -8,32 +9,36 @@ export default class MemoryStorage {
 		return this.data.push(record) - 1;
 	}
 
-	destroy(index = null) {
-		if (this.getRecord() !== null) {
+	destroy(index : number | null = null) : boolean {
+		if (index !== null && this.getRecord() !== null) {
 			this.data.splice(index, 1);
 			return true;
 		}
 
-		throw new Error(`No record found for index ${index}`);
+		return false;
 	}
 	
-	getRecord(index = null) {
+	getRecord(index : number | null = null) : object | null {
+		if (index === null) {
+			return null;
+		}
+
 		return this.data[index] || null;
 	}
 
-	length() {
+	length() : number {
 		return this.data.length;
 	}
 
-	retrieve(index = null) {
+	retrieve(index : number | null = null) : Array<object> | object | null {
 		if (typeof index === 'number' && !isNaN(index)) {
-			return this.getRecorddata[index] || null;
+			return this.getRecord(index);
 		}
 		
 		return this.data;
 	}
 
-	update(index, data) {
+	update(index : number, data : Array<any> | object) : boolean {
 		const record = this.getRecord(index);
 		if (record) {
 			if (data instanceof Array) {
@@ -41,10 +46,10 @@ export default class MemoryStorage {
 			} else {
 				this.data[index] = Object.assign({}, this.data[index], data);
 			}
-		} else {
-			throw new Error(`No record found for index ${index}`);
-		}
 
-		return true;
+			return true;
+		}
+		
+		return false;
 	}
 }
