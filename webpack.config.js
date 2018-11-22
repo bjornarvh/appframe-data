@@ -2,7 +2,7 @@
 const path = require('path');
 
 const config = {
-	entry: './src/data-object.js',
+	entry: './src/data-object.ts',
 	module: {
 		rules: [
 			{
@@ -15,6 +15,9 @@ const config = {
 	output: {
 		path: path.resolve(__dirname, 'dist'),
 		library: 'DataObject'
+	},
+	resolve: {
+		extensions: ['.js', '.jsx', '.json', '.ts', '.tsx']
 	}
 };
 
