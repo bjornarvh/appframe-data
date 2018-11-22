@@ -1,10 +1,10 @@
 import { fireCallback } from './common';
-import { Af, IDataHandler } from '../types';
+import { Af, IDataHandler, IRecordDataOptions } from '../types';
 
 interface DataHandlerOptions {
 	articleId? : string,
 	dataSourceId? : string,
-	fields? : Array<string>,
+	fields? : Array<string> | string,
 	groupBy? : Array<string>,
 	timeout? : number
 }
@@ -15,7 +15,7 @@ declare const AbortError : Function;
 class DataHandler implements IDataHandler {
 	articleId : string;
 	dataSourceId : string | null;
-	fields : Array<string> | null;
+	fields : Array<string> | string | null;
 	groupBy : Array<string> | null;
 	previousRequestController : AbortController | null = null;
 	timeout : number;
@@ -43,23 +43,47 @@ class DataHandler implements IDataHandler {
 		this.timeout = timeout || 30000;
 	}
 
+	/**
+	 * Adds a record to the database
+	 * 
+	 * @param data Record that should be added
+	 * @param callback Callback when the record has been created
+	 */
 	create(data : object, callback : Function) : Promise<object | boolean> {
 		return this.request('create', data, callback);
 	}
 	
-	destroy(data : object, callback : Function) : Promise<object | boolean> {
+	/**
+	 * Deletes a record in the database
+	 * 
+	 * @param data Object containing primkey of the record to delete
+	 * @param callback Callback when the record has been created/an error has occured
+	 */
+	destroy(data : IRecordDataOptions, callback : Function) : Promise<object | boolean> {
 		return this.request('destroy', data, callback);
 	}
 	
+	/**
+	 * Retrieves one or more records based on the request parameters
+	 * 
+	 * @param data Request parameters
+	 * @param callback Callback when the record has been created/an error has occured
+	 */
 	retrieve(data : object, callback : Function) : Promise<object | boolean> {
 		return this.request('retrieve', data, callback);
 	}
 	
-	update(data : object, callback : Function) : Promise<object | boolean> {
+	/**
+	 * Updates a single record
+	 * 
+	 * @param data Object containing PrimKey and any updated fields.
+	 * @param callback Callback when the record has been updated/an error has occured
+	 */
+	update(data : IRecordDataOptions, callback : Function) : Promise<object | boolean> {
 		return this.request('update', data, callback);
 	}
 	
-	request(type : string, data : object, callback : Function) : Promise<object | boolean> {
+	request(type : string, data : object, callback : Function) : Promise<object | false> {
 		return new Promise((resolve, reject) => {
 			const options : RequestInit = {
 				body: JSON.stringify(data),

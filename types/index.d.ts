@@ -21,10 +21,6 @@ export interface IDataObject {
 	recordSource: IRecordSource;
 }
 
-export interface IErrorHandler {
-	(error : string, callback : Function) : void;
-}
-
 export interface IDataObjectField {
 
 }
@@ -55,6 +51,26 @@ export interface IDataObjectOptions {
 	uniqueIdField?: string;
 }
 
+export interface IRecordDataOptions {
+	PrimKey: string
+}
+
+export interface IDataObjectParameters {
+	[index: string] : any;
+	distinctRows?: boolean;
+	filterObject?: object | null;
+	filterString?: string | null;
+	masterChildCriteria?: object | null;
+	maxRecords?: number;
+	sortOrder?: Array<any>;
+	whereObject?: object | null;
+	whereClause?: string | null;
+}
+
+export interface IErrorHandler {
+	(error : string, callback : Function) : void;
+}
+
 export interface IPrivateDataObjectOptions {
 	allowDelete: boolean;
 	allowUpdate: boolean;
@@ -78,18 +94,6 @@ export interface IPrivateDataObjectOptions {
 	systemFieldNames: object;
 	timeout: number;
 	uniqueIdField: string;
-}
-
-export interface IDataObjectParameters {
-	[index: string] : any;
-	distinctRows?: boolean;
-	filterObject?: object | null;
-	filterString?: string | null;
-	masterChildCriteria?: object | null;
-	maxRecords?: number;
-	sortOrder?: Array<any>;
-	whereObject?: object | null;
-	whereClause?: string | null;
 }
 
 export interface IRecordSource {
