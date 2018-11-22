@@ -1,7 +1,33 @@
 import { fireCallback } from './common';
 
+interface DataHandlerOptions {
+	articleId? : string,
+	dataSourceId? : string,
+	fields? : Array<string>,
+	groupBy? : Array<string>,
+	timeout? : number
+}
+
+interface Af {
+	article: AfArticle
+}
+
+interface AfArticle {
+	id: string
+}
+
+declare const af : Af;
+declare const AbortError : Function;
+
 class DataHandler {
-	constructor(options) {
+	articleId : string;
+	dataSourceId : string | null;
+	fields : Array<string> | null;
+	groupBy : Array<string> | null;
+	previousRequestController : AbortController | null = null;
+	timeout : number;
+
+	constructor(options : DataHandlerOptions) {
 		const {
 			articleId,
 			dataSourceId,
@@ -12,8 +38,10 @@ class DataHandler {
 
 		if (articleId) {
 			this.articleId = articleId;
-		} else if (global.af && global.af.article) {
+		} else if (af && af.article) {
 			this.articleId = af.article.id;
+		} else {
+			throw new Error('No article ID given.');
 		}
 
 		this.dataSourceId = dataSourceId || null;
@@ -22,32 +50,33 @@ class DataHandler {
 		this.timeout = timeout || 30000;
 	}
 
-	create(data, callback) {
+	create(data : object, callback : Function) : Promise<object | boolean> {
 		return this.request('create', data, callback);
 	}
 	
-	destroy(data, callback) {
+	destroy(data : object, callback : Function) : Promise<object | boolean> {
 		return this.request('destroy', data, callback);
 	}
 	
-	retrieve(data, callback) {
+	retrieve(data : object, callback : Function) : Promise<object | boolean> {
 		return this.request('retrieve', data, callback);
 	}
 	
-	update(data, callback) {
+	update(data : object, callback : Function) : Promise<object | boolean> {
 		return this.request('update', data, callback);
 	}
 	
-	request(type, data, callback) {
+	request(type : string, data : object, callback : Function) : Promise<object | boolean> {
 		return new Promise((resolve, reject) => {
-			const options = {
+			const options : RequestInit = {
 				body: JSON.stringify(data),
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json; charset=utf-8'
 				}
 			};
-			let controller = null;
+
+			let controller : AbortController | null = null;
 		
 			let url = `/${type}/${this.articleId}/${this.dataSourceId}`;
 			let isTimedOut = false;
@@ -99,8 +128,8 @@ class DataHandler {
 						reject(json.error);
 					}
 				})
-				.catch(error => {
-					if (error.message === 'Aborted' || (global.AbortError && error instanceof global.AbortError)) {
+				.catch((error : Error) => {
+					if (error.message === 'Aborted' || (AbortError && error instanceof AbortError)) {
 						resolve(false);
 					} else {
 						reject(error);
