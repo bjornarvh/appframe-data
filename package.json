@@ -34,6 +34,7 @@
     "@babel/preset-env": "^7.1.6",
     "@babel/preset-typescript": "^7.1.0",
     "@bjornarvh/appframe-cli": "^1.1.6",
+    "@types/jest": "^23.3.9",
     "babel-core": "^7.0.0-bridge.0",
     "babel-eslint": "^10.0.1",
     "babel-jest": "^23.6.0",
@@ -44,6 +45,8 @@
     "eslint-plugin-jest": "^22.0.0",
     "jest": "^23.6.0",
     "minimist": "^1.2.0",
+    "ts-jest": "^23.10.5",
+    "typescript": "^3.1.6",
     "webpack": "^4.26.0",
     "webpack-cli": "^3.1.2"
   }
