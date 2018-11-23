@@ -2,7 +2,7 @@
   "name": "@olenbetong/appframe-data-object",
   "version": "0.1.0",
   "description": "An implementation of data objects for AppframeWeb applications.",
-  "main": "appframe-data-object.js",
+  "main": "dist/data-object.min.js",
   "scripts": {
     "build": "npm run build:test && npm run build:prod",
     "build:test": "npx webpack --mode=development --progress --config webpack.config.js",
