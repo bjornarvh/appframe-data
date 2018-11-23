@@ -1,55 +1,88 @@
+const invalidIndexError = 'Index must be a number and be within the range of the data indices.';
+const invalidRecordError = 'Record must be an object';
+
 export class MemoryStorage {
 	data : Array<object> = [];
 
+	/**
+	 * Adds a record to the storage
+	 * 
+	 * @param record Record to add to the storage
+	 * @returns Index of the created record
+	 */
 	create(record : object) : number {
 		if (typeof record !== 'object') {
-			throw new TypeError('Record must be an object');
+			throw new TypeError(invalidRecordError);
 		}
 	
 		return this.data.push(record) - 1;
 	}
 
-	destroy(index : number | null = null) : boolean {
-		if (index !== null && this.getRecord() !== null) {
+	/**
+	 * Removes a record from the storage
+	 * 
+	 * @param index Index of the record to remove
+	 */
+	destroy(index : number) : void {
+		if (this.isValidIndex(index)) {
 			this.data.splice(index, 1);
-			return true;
+		} else {
+			throw new TypeError(invalidIndexError);
+		}
+	}
+	
+	/**
+	 * Checks if an index is valid for the storage.
+	 * 
+	 * @param index Index to be checked if is valid
+	 */
+	isValidIndex(index : number | null) : boolean {
+		if (typeof index === 'number' && !isNaN(index)) {
+			return index >= 0 && index < this.data.length;
 		}
 
 		return false;
 	}
-	
-	getRecord(index : number | null = null) : object | null {
-		if (index === null) {
-			return null;
-		}
 
-		return this.data[index] || null;
-	}
-
+	/**
+	 * @returns Current number of records stored.
+	 */
 	length() : number {
 		return this.data.length;
 	}
 
+	/**
+	 * Retrieves a single record from the storage, or an array of
+	 * all records if index is not given.
+	 * 
+	 * @param index Index of the record to be retrieved
+	 */
 	retrieve(index : number | null = null) : Array<object> | object | null {
-		if (typeof index === 'number' && !isNaN(index)) {
-			return this.getRecord(index);
+		if (index === null) {
+			return this.data;
+		} else if (this.isValidIndex(index)) {
+			return this.data[index];
 		}
 		
-		return this.data;
+		throw new TypeError(invalidIndexError);
 	}
 
-	update(index : number, data : Array<any> | object) : boolean {
-		const record = this.getRecord(index);
-		if (record) {
+	/**
+	 * 
+	 * @param index Index of the record to update
+	 * @param data Data to update the record with
+	 */
+	update(index : number, data : Array<any> | object) : void {
+		if (this.isValidIndex(index)) {
 			if (data instanceof Array) {
 				this.data[index] = data;
-			} else {
+			} else if (typeof data === 'object') {
 				this.data[index] = Object.assign({}, this.data[index], data);
+			} else {
+				throw new TypeError(invalidRecordError);
 			}
-
-			return true;
+		} else {
+			throw new TypeError(invalidIndexError);
 		}
-		
-		return false;
 	}
 }

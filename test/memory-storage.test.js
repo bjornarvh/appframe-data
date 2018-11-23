@@ -10,9 +10,7 @@ describe('Memory Storage', () => {
 		let data = storage.retrieve();
 		expect(data).toEqual([{ data: null }]);
 
-		const result = storage.update(0, { data: 1 });
-		expect(result).toBe(true);
-
+		storage.update(0, { data: 1 });
 		data = storage.retrieve(0);
 		expect(data).toEqual({ data: 1 });
 
@@ -20,5 +18,21 @@ describe('Memory Storage', () => {
 
 		storage.destroy(0);
 		expect(storage.length()).toBe(0);
+	});
+
+	it('throws error on invalid arguments', () => {
+		const storage = new MemoryStorage();
+		
+		const create = () => storage.create(0);
+		expect(create).toThrow(TypeError);
+
+		const destroy = () => storage.destroy('a');
+		expect(destroy).toThrow(TypeError);
+
+		const retrieve = () => storage.retrieve('a');
+		expect(retrieve).toThrow(TypeError);
+
+		const update = () => storage.update('a');
+		expect(update).toThrow(TypeError);
 	});
 });
