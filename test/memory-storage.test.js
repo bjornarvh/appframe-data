@@ -1,38 +1,69 @@
 const { MemoryStorage } = require('../src/memory-storage');
 
 describe('Memory Storage', () => {
-	it('can create, destroy, retrieve and update records', () => {
-		const storage = new MemoryStorage();
+	let storage;
+
+	beforeEach(() => {
+		storage = new MemoryStorage();
+		storage.create({ key: 'value' });
+	});
+
+	it('can create records', () => {
 		const index = storage.create({ data: null });
+		expect(index).toBe(1);
+	});
 
-		expect(index).toBe(0);
-
+	it('can retrieve records', () => {
 		let data = storage.retrieve();
-		expect(data).toEqual([{ data: null }]);
+		expect(data).toEqual([{ key: 'value' }]);
+	});
 
-		storage.update(0, { data: 1 });
+	it('can update records', () => {
+		let data;
+
+		storage.update(0, { key: 'new value' });
+
 		data = storage.retrieve(0);
-		expect(data).toEqual({ data: 1 });
+		expect(data).toEqual({ key: 'new value' });
 
-		expect(storage.length()).toBe(1);
+		storage.update(0, [1, 2, 3]);
 
+		data = storage.retrieve(0);
+		expect(data).toEqual([1, 2, 3]);
+	});		
+
+	it('can return the storage size', () => {
+		const size = storage.length();
+		expect(size).toEqual(1);
+	});
+
+	it('can remove records', () => {
 		storage.destroy(0);
 		expect(storage.length()).toBe(0);
 	});
 
-	it('throws error on invalid arguments', () => {
-		const storage = new MemoryStorage();
-		
+	it('throws error if new record isn\'t an object', () => {
 		const create = () => storage.create(0);
 		expect(create).toThrow(TypeError);
+	});
 
+	it('throws error if index is invalid when deleting', () => {
 		const destroy = () => storage.destroy('a');
 		expect(destroy).toThrow(TypeError);
+	});
 
+	it('throws error if index is invalid when retrieving', () => {
 		const retrieve = () => storage.retrieve('a');
 		expect(retrieve).toThrow(TypeError);
+	});
 
-		const update = () => storage.update('a');
+	it('throws error if index is invalid when updating', () => {
+		let update = () => storage.update('a');
+		expect(update).toThrow(TypeError);
+	});
+
+	it('throws error if record is invalid when updating', () => {
+		const update = () => storage.update(0, 'a');
 		expect(update).toThrow(TypeError);
 	});
 });
