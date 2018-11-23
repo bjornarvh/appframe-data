@@ -17,6 +17,14 @@ export interface IDataHandler {
 	update(data: object, callback: Function) : Promise<object | boolean>;
 }
 
+export interface IDataHandlerOptions {
+	articleId? : string,
+	dataSourceId? : string,
+	fields? : Array<string> | string,
+	groupBy? : Array<string>,
+	timeout? : number
+}
+
 export interface IDataObject {
 	recordSource: IRecordSource;
 }

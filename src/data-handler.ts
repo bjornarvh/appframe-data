@@ -2,17 +2,10 @@ import { fireCallback } from './common';
 import {
 	Af,
 	IDataHandler,
+	IDataHandlerOptions,
 	IRecordDataOptions,
 	IDataObjectParameters
 } from '../types';
-
-interface DataHandlerOptions {
-	articleId? : string,
-	dataSourceId? : string,
-	fields? : Array<string> | string,
-	groupBy? : Array<string>,
-	timeout? : number
-}
 
 declare const af : Af;
 declare const AbortError : Function;
@@ -22,10 +15,10 @@ export class DataHandler implements IDataHandler {
 	dataSourceId : string | null;
 	fields : Array<string> | string | null;
 	groupBy : Array<string> | null;
-	previousRequestController : AbortController | null = null;
+	previousController : AbortController | null = null;
 	timeout : number;
 
-	constructor(options : DataHandlerOptions = {}) {
+	constructor(options : IDataHandlerOptions = {}) {
 		const {
 			articleId,
 			dataSourceId,
@@ -112,29 +105,33 @@ export class DataHandler implements IDataHandler {
 			}
 		
 			if (typeof AbortController !== 'undefined') {
-				if (this.previousRequestController) {
-					this.previousRequestController.abort();
+				if (this.previousController) {
+					this.previousController.abort();
 				}
 		
 				controller = new AbortController();
-				this.previousRequestController = controller;
-				options.signal = this.previousRequestController.signal;
+				this.previousController = controller;
+				options.signal = this.previousController.signal;
 			}
 		
-			const timeout = setTimeout(() => {
+			const timeoutFn = () => {
 				if (controller) {
 					controller.abort();
 				}
-	
+
 				isTimedOut = true;
 				resolve(false);
-			}, this.timeout);
-		
+			}
+
+			const timeout = setTimeout(timeoutFn, this.timeout);
+	
 			fetch(url, options)
 				.then(result => {
 					clearTimeout(timeout);
-					if (isTimedOut || (controller && this.previousRequestController !== controller)) {
-						return false;
+					if (isTimedOut) {
+						return Promise.resolve(false);
+					} else if (controller && this.previousController !== controller) {
+						return Promise.resolve(false);
 					}
 		
 					return result.json();
@@ -148,6 +145,8 @@ export class DataHandler implements IDataHandler {
 					} else if (json.hasOwnProperty('error')) {
 						fireCallback(callback, json.error);
 						reject(json.error);
+					} else {
+						reject('Failed to interpret data returned from server');
 					}
 				})
 				.catch((error : Error) => {
