@@ -2,10 +2,6 @@ const { DataObject } = require('../src/data-object');
 global.fetch = require('jest-fetch-mock');
 
 describe('DataObject', () => {
-	beforeEach(() => {
-		fetch.resetMocks();
-	});
-
 	it('gets correct ID', () => {
 		const dataObject = new DataObject({
 			dataSourceId: 'dsTestObject'
@@ -43,5 +39,23 @@ describe('DataObject', () => {
 			dataObject.recordSource[setter](value2);
 			expect(dataObject.getParameter(name)).toBe(value2);
 		}
+	});
+});
+
+describe('DataObject editing', () => {
+	let dataObject = new DataObject();
+
+	beforeEach(() => {
+		dataObject = new DataObject({
+			dataSourceId: 'dsTest'
+		});
+
+		dataObject.setCurrentIndex(-1);
+
+		fetch.resetMocks();
+	});
+
+	it('can set field values', () => {
+		
 	});
 });

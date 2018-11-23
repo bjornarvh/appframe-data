@@ -15,8 +15,9 @@ export class DataHandler implements IDataHandler {
 	dataSourceId : string | null;
 	fields : Array<string> | string | null;
 	groupBy : Array<string> | null;
-	previousController : AbortController | null = null;
 	timeout : number;
+
+	private previousController : AbortController | null = null;
 
 	constructor(options : IDataHandlerOptions = {}) {
 		const {

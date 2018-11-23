@@ -1,14 +1,15 @@
 /* eslint-disable no-console */
-import EventEmitter from 'eventemitter3';
+import EventEmitter, { ListenerFn } from 'eventemitter3';
 import { DataHandler } from './data-handler';
 import { MemoryStorage } from './memory-storage';
 import { fireCallback } from './common';
 import {
 	Af,
 	IDataObjectOptions,
-	ICallbackFunction,
 	IDataHandler,
 	IDataObject,
+	IDataObjectField,
+	IFieldDefinition,
 	IPrivateDataObjectOptions,
 	IRecordSource,
 	IDataObjectParameters
@@ -17,14 +18,23 @@ import {
 declare const af : Af;
 
 class DataObject extends EventEmitter implements IDataObject {
-	_dataHandler : IDataHandler;
-	_storageEngine = new MemoryStorage();
-	_options : IPrivateDataObjectOptions = {
+	private _dataHandler : IDataHandler;
+	private _storageEngine = new MemoryStorage();
+	private _options : IPrivateDataObjectOptions = {
 		allowDelete: false,
 		allowUpdate: false,
 		allowInsert: false,
 		articleId: af && af.article && af.article.id,
-		errorHandler: function(error, callback) {
+		confirmHandler: function(title : string, question : string, yes : string, no : string, cancel : string) : Promise<boolean> {
+			return new Promise((resolve, reject) => {
+				if (confirm(question)) {
+					resolve(true);
+				} else {
+					reject(cancel);
+				}
+			});
+		},
+		errorHandler: function(error : string, callback? : Function) {
 			alert(error);
 			fireCallback(callback, error, null);
 		},
@@ -56,19 +66,17 @@ class DataObject extends EventEmitter implements IDataObject {
 		uniqueIdField: 'PrimKey',
 	};
 
-	_fieldNames = [];
-	_parametersChanged = false;
-	_currentIndex = null;
-	_errorRecords ={};
-	_dirtyRecords = {};
-	_savingRecords = {};
-	_newRecord = {};
-	_dataLoaded = null;
-	_dataSaving = false;
-	_dataLoading = false;
-	_temporarilyDisallowDelete = false;
-	_temporarilyDisallowUpdate = false;
-	_temporarilyDisallowInsert = false;
+	private _fields : Array<IFieldDefinition> = [];
+	private _parametersChanged = false;
+	private _currentIndex : number | null = null;
+	private _currentLoadingPromise : Promise<boolean> | null = null;
+	private _dataLoaded = null;
+	private _dataSaving = false;
+	private _dataLoading = false;
+	private _disableDelete = false;
+	private _disableUpdate = false;
+	private _disableInsert = false;
+	private _recordStatus = new Map<number, Map<string, any>>();
 
 	recordSource : IRecordSource = {
 		getFilterObject: () => this.getParameter('filterObject'),
@@ -87,7 +95,7 @@ class DataObject extends EventEmitter implements IDataObject {
 		setWhereObject: (value : object | null) => this.setParameter('whereObject', value),
 	};
 
-	constructor(options : IDataObjectOptions) {
+	constructor(options : IDataObjectOptions = {}) {
 		super();
 
 		const _options : IPrivateDataObjectOptions = Object.assign({}, this._options);
@@ -106,29 +114,74 @@ class DataObject extends EventEmitter implements IDataObject {
 		this.initialize();
 	}
 
-	attachEvent(event : string, callback : ICallbackFunction) {
-		super.on.call(this, event, callback);
+	areParametersChanged() : boolean {
+		return this._parametersChanged;
 	}
 
-	detachEvent(event : string, callback : ICallbackFunction) {
-		super.removeListener.call(this, event, callback);
+	attachEvent(event : string, eventHandler : ListenerFn) {
+		super.on.call(this, event, eventHandler);
 	}
 
-	cancelEdit() {}
+	detachEvent(event : string, eventHandler : ListenerFn) {
+		super.removeListener.call(this, event, eventHandler);
+	}
 
-	cancelField(field : string) {}
+	cancelEdit() {
+		if (typeof this._currentIndex === 'number') {
+			if (this.isDirty(this._currentIndex)) {
+				this.cleanRecord(this._currentIndex);
+			}
 
-	currentRow() {}
+			this.emit('onCancelEdit', this._currentIndex);
 
-	endEdit() {}
+			return true;
+		}
 
-	deleteCurrentRow(callback : Function) {
+		return false;
+	}
+
+	cancelField(field : string) : boolean {
+		if (this._currentIndex !== null) {
+			return this.cleanRecord(this._currentIndex, field);
+		}
+	
+		return false;
+	}
+
+	cleanRecord(index : number, field : string | null = null) : boolean {
+		if (field === null) {
+			const wasDirty = this._recordStatus.delete(index);
+
+			if (wasDirty) {
+				this.emit('onDirtyChanged', false);
+				this.emit('onRecordRefreshed', index);
+			}
+
+			return wasDirty;
+		} else {
+			const status = this._recordStatus.get(index);
+
+			if (status) {
+				return status.delete(field);
+			}
+		}
+
+		return false;
+	}
+
+	currentRow() {
+
+	}
+
+	endEdit(callback? : Function) : Promise<boolean> {}
+
+	deleteCurrentRow(callback? : Function) {
 		return new Promise((resolve, reject) => {
 	
 		});
 	}
 	
-	deleteRow(callback : Function) {
+	deleteRow(callback? : Function) {
 		return new Promise((resolve, reject) => {
 	
 		});
@@ -148,41 +201,88 @@ class DataObject extends EventEmitter implements IDataObject {
 
 	}
 
-	isDataLoaded() {}
+	isDataLoaded() : boolean {}
 
-	isDataLoading() {}
+	isDataLoading() : boolean {}
 
-	isDeleteAllowed() {}
+	isDeleteAllowed() : boolean {}
+	
+	isDeleteNeverAllowed() : boolean {
+		return this._options.allowDelete;
+	}
 
-	isUpdateAllowed() {}
+	isDirty(indexOrField : number | string | null = null) : boolean {
+		if (typeof indexOrField === 'number') {
+			return this.isRecordDirty(indexOrField);
+		} else if (indexOrField === null && this._currentIndex !== null) {
+			return this.isRecordDirty(this._currentIndex);
+		} else if (typeof indexOrField === 'string' && this._currentIndex !== null) {
+			return this.isFieldDirty(this._currentIndex, indexOrField);
+		}
 
-	isInsertAllowed() {}
+		return false;
+	}
 
-	isDeleteNeverAllowed() {}
+	isFieldDirty(index : number, field : string) : boolean {
+		const status = this._recordStatus.get(index);
+		if (status && status.has(field)) {
+			return true;
+		}
 
-	isUpdateNeverAllowed() {}
+		return false;
+	}
 
-	isInsertNeverAllowed() {}
+	isRecordDirty(index : number) : boolean {
+		const status = this._recordStatus.get(index);
 
-	getCurrentIndex() {}
+		if (status) {
+			return status.size > 0;
+		}
+
+		return false;
+	}
+	
+	isInsertAllowed() : boolean {
+		return this._options.allowInsert && ! this._disableInsert;
+	}
+
+	isInsertNeverAllowed() : boolean {
+		return this._options.allowInsert;
+	}
+
+	isUpdateAllowed() : boolean {
+		return this._options.allowUpdate && ! this._disableUpdate;
+	}
+
+	isUpdateNeverAllowed() : boolean {
+		return this._options.allowUpdate;
+	}
+
+	getCurrentIndex() : number | null {
+		return this._currentIndex;
+	}
 
 	getData(index : number | undefined, field : string | undefined) : object | Array<object> {
 		return {};
 	}
 
-	getDataLength() {}
+	getDataLength() : number {
+		return this._storageEngine.length();
+	}
 
-	getDataSourceId() {
+	getDataSourceId() : string | null {
 		return this._options.dataSourceId;
 	}
 
-	getFields() {}
+	getFields() : Array<IDataObjectField> {
+		throw new Error('Not implemented');
+	}
 
-	getFieldsAsync() {
+	getFieldsAsync() : Promise<Array<IFieldDefinition>> {
 		return Promise.resolve([]);
 	}
 
-	getMasterDataObject() {
+	getMasterDataObject() : IDataObject | null {
 		return this._options.masterDataObject;
 	}
 
@@ -194,19 +294,50 @@ class DataObject extends EventEmitter implements IDataObject {
 		return null;
 	}
 
-	refreshCurrentRow(callback: Function | undefined) {
+	refreshCurrentRow(callback?: Function) {
 		return new Promise((resolve, reject) => {
 	
 		});
 	}
 	
-	refreshDataSource(callback : Function | undefined) {
-		return new Promise((resolve, reject) => {
-	
+	refreshDataSource(callback? : Function) : Promise<boolean> {
+		if (this.isDirty()) {
+			const answer = this._options.confirmHandler(
+				'Reloading data',
+				'There are unsaved changes. Would you like to save before reloading data?',
+				'Save and reload',
+				'Reload without saving',
+				'Cancel reloading'
+			);
+
+			return answer
+				.then(saveFirst => {
+					if (saveFirst) {
+						return this.endEdit()
+							.then(() => this.refreshDataSource(callback))
+					} else {
+						this.cancelEdit();
+						return this.refreshDataSource(callback);
+					}
+				})
+				.catch(() => false);
+		} else if (this._currentLoadingPromise !== null && !this.areParametersChanged()) {
+			if (typeof callback === 'function' && this._currentLoadingPromise !== null) {
+				this._currentLoadingPromise
+					.then(result => fireCallback(callback, result));
+			}
+
+			return this._currentLoadingPromise;
+		}
+
+		this._currentLoadingPromise =  new Promise((resolve, reject) => {
+			// TODO: Retrieve data
 		});
+
+		return this._currentLoadingPromise;
 	}
 	
-	refreshRow(index : number, callback : Function | undefined) {
+	refreshRow(index : number, callback? : Function) : Promise<boolean> {
 		return new Promise((resolve, reject) => {
 	
 		});
