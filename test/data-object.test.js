@@ -18,7 +18,7 @@ describe('DataObject', () => {
 		expect(dataObject._options.articleId).toBe('test-article');
 	});
 
-	test('has a functioning recordSource helper', () => {
+	it('has a functioning recordSource helper', () => {
 		const dataObject = new DataObject({});
 		const params = [
 			['filterObject', 'getFilterObject', 'setFilterObject'],
