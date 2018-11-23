@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import EventEmitter from 'eventemitter3';
-import DataHandler from './data-handler';
+import { DataHandler } from './data-handler';
 import { MemoryStorage } from './memory-storage';
 import { fireCallback } from './common';
 import {

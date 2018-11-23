@@ -17,7 +17,7 @@ interface DataHandlerOptions {
 declare const af : Af;
 declare const AbortError : Function;
 
-class DataHandler implements IDataHandler {
+export class DataHandler implements IDataHandler {
 	articleId : string;
 	dataSourceId : string | null;
 	fields : Array<string> | string | null;
@@ -25,7 +25,7 @@ class DataHandler implements IDataHandler {
 	previousRequestController : AbortController | null = null;
 	timeout : number;
 
-	constructor(options : DataHandlerOptions) {
+	constructor(options : DataHandlerOptions = {}) {
 		const {
 			articleId,
 			dataSourceId,
@@ -111,7 +111,7 @@ class DataHandler implements IDataHandler {
 				url += '/' + this.groupBy;
 			}
 		
-			if (AbortController) {
+			if (typeof AbortController !== 'undefined') {
 				if (this.previousRequestController) {
 					this.previousRequestController.abort();
 				}
@@ -146,12 +146,12 @@ class DataHandler implements IDataHandler {
 						fireCallback(callback, null, json.success);
 						resolve(json.success);
 					} else if (json.hasOwnProperty('error')) {
-						fireCallback(callback, null, json.error);
+						fireCallback(callback, json.error);
 						reject(json.error);
 					}
 				})
 				.catch((error : Error) => {
-					if (error.message === 'Aborted' || (AbortError && error instanceof AbortError)) {
+					if (error.message === 'Aborted' || (typeof AbortError !== 'undefined' && error instanceof AbortError)) {
 						resolve(false);
 					} else {
 						reject(error);
@@ -160,5 +160,3 @@ class DataHandler implements IDataHandler {
 		});
 	}
 }
-
-export default DataHandler;
