@@ -15,7 +15,6 @@ import {
 	IDataObjectParameters,
 	IStorageEngine,
 	IConfirmHandler,
-	IErrorHandler
 } from '../types';
 
 declare const af : Af;
@@ -37,18 +36,11 @@ class DataObject extends EventEmitter implements IDataObject {
 				}
 			});
 		},
-		errorHandler: function(error : string, callback? : Function) {
-			alert(error);
-			fireCallback(callback, error, null);
-		},
 		dataSourceId: null,
 		disableAutoload: false,
 		dynamicLoading: false,
 		fields: [],
 		groupBy: null,
-		hasIITrig: false,
-		hasIUTrig: false,
-		hasIDTrig: false,
 		linkFields: null,
 		masterDataObject: null,
 		optimisticLocking: false,
@@ -153,14 +145,6 @@ class DataObject extends EventEmitter implements IDataObject {
 		return false;
 	}
 
-	canModifyCurrentRow() : boolean {
-		return false;
-	}
-
-	canModifyRow(index : number) : boolean {
-		return false;
-	}
-
 	cleanRecord(index : number, field : string | null = null) : boolean {
 		if (field === null) {
 			const wasDirty = this._recordStatus.delete(index);
@@ -210,14 +194,6 @@ class DataObject extends EventEmitter implements IDataObject {
 		return new Promise((resolve, reject) => {
 	
 		});
-	}
-
-	hasDirtyRecords() : boolean {
-		return false;
-	}
-
-	hasError(index : number) : boolean {
-		return false;
 	}
 	
 	initialize() {
@@ -433,12 +409,8 @@ class DataObject extends EventEmitter implements IDataObject {
 		return false;
 	}
 
-	setErrorHandler(handler : IErrorHandler) : void {
-
-	}
-
 	setGroupBy(groupBy : string) : void {
-		
+
 	}
 
 	setParameter(parameter : string, value : any) {

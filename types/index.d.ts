@@ -29,8 +29,6 @@ export interface IDataObject {
 	attachEvent(event : string, handler : ListenerFn) : any;
 	cancelEdit() : boolean;
 	cancelField(field : string) : boolean;
-	canModifyCurrentRow() : boolean
-	canModifyRow(index : number) : boolean;
 	clearFilter() : void;
 	currentRow(field? : string, value? : any) : any;
 	dataLastLoaded() : Date;
@@ -50,7 +48,6 @@ export interface IDataObject {
 	getMaxRecords() : number;
 	getParameter(parameter : string) : any;
 	getUniqueIdField() : string;
-	hasDirtyRecords() : boolean;
 	isDataLoaded() : boolean;
 	isDataLoading() : boolean;
 	isDeleteAllowed() : boolean;
@@ -70,7 +67,6 @@ export interface IDataObject {
 	setAllowUpdate(allow : boolean) : void
 	setConfirmHandler(handler : IConfirmHandler) : void;
 	setCurrentIndex(index : number | null) : boolean;
-	setErrorHandler(handler : IErrorHandler) : void;
 	setGroupBy(field : string) : void;
 	setParameter(parameter : string, value : any) : any;
 }
@@ -89,11 +85,7 @@ export interface IDataObjectOptions {
 	dataSourceId? : string;
 	disableAutoload? : boolean;
 	dynamicLoading? : boolean;
-	errorHandler? : IErrorHandler;
 	groupBy? : object;
-	hasIITrig? : boolean;
-	hasIUTrig? : boolean;
-	hasIDTrig? : boolean;
 	linkFields? : object;
 	masterDataObject? : IDataObject;
 	optimisticLocking? : boolean;
@@ -137,10 +129,6 @@ export interface IDataObjectParameters {
 	whereClause? : string | null;
 }
 
-export interface IErrorHandler {
-	(error : string, callback : Function) : void;
-}
-
 /**
  * A confirm handler should return a promise that resolves to true
  * if the user selects the "yes" answer, false if the user selects the
@@ -159,12 +147,8 @@ export interface IPrivateDataObjectOptions {
 	dataSourceId : string | null;
 	disableAutoload : boolean;
 	dynamicLoading : boolean;
-	errorHandler : IErrorHandler;
 	fields : Array<IDataObjectField>;
 	groupBy : object | null;
-	hasIITrig : boolean;
-	hasIUTrig : boolean;
-	hasIDTrig : boolean;
 	linkFields : object | null;
 	masterDataObject : IDataObject | null;
 	optimisticLocking : boolean;
