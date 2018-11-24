@@ -1,19 +1,7 @@
-const { DataObject } = require('../src/data-object');
-global.fetch = require('jest-fetch-mock');
+import { DataObject } from '../src/data-object';
+import fetchMock from 'jest-fetch-mock';
 
 describe('DataObject', () => {
-	it('gets correct ID', () => {
-		const dataObject = new DataObject({
-			dataSourceId: 'dsTestObject'
-		});
-
-		expect(dataObject.getDataSourceId()).toBe('dsTestObject');
-
-		// check that data object gets article from af.article.id
-		// global is defined in jest config
-		expect(dataObject._options.articleId).toBe('test-article');
-	});
-
 	it('has a functioning recordSource helper', () => {
 		const dataObject = new DataObject({});
 		const params = [
@@ -52,7 +40,7 @@ describe('DataObject editing', () => {
 
 		dataObject.setCurrentIndex(-1);
 
-		fetch.resetMocks();
+		fetchMock.resetMocks();
 	});
 
 	it('can set field values', () => {

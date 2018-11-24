@@ -1,7 +1,8 @@
-const { MemoryStorage } = require('../src/memory-storage');
+import { IStorageEngine } from "../types";
+import { MemoryStorage } from '../src/memory-storage';
 
 describe('Memory Storage', () => {
-	let storage;
+	let storage : IStorageEngine;
 
 	beforeEach(() => {
 		storage = new MemoryStorage();
@@ -43,26 +44,31 @@ describe('Memory Storage', () => {
 	});
 
 	it('throws error if new record isn\'t an object', () => {
+		// @ts-ignore
 		const create = () => storage.create(0);
 		expect(create).toThrow(TypeError);
 	});
 
 	it('throws error if index is invalid when deleting', () => {
+		// @ts-ignore
 		const destroy = () => storage.destroy('a');
 		expect(destroy).toThrow(TypeError);
 	});
 
 	it('throws error if index is invalid when retrieving', () => {
+		// @ts-ignore
 		const retrieve = () => storage.retrieve('a');
 		expect(retrieve).toThrow(TypeError);
 	});
 
 	it('throws error if index is invalid when updating', () => {
+		// @ts-ignore
 		let update = () => storage.update('a');
 		expect(update).toThrow(TypeError);
 	});
 
 	it('throws error if record is invalid when updating', () => {
+		// @ts-ignore
 		const update = () => storage.update(0, 'a');
 		expect(update).toThrow(TypeError);
 	});

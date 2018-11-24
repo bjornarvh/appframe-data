@@ -55,13 +55,8 @@ module.exports = {
 	// globalTeardown: null,
 
 	// A set of global variables that need to be available in all test environments
-	globals: {
-		af: {
-			article: {
-				id: 'test-article'
-			}
-		}
-	},
+	// globals: {
+	// },
 
 	// An array of directory names to be searched recursively up from the requiring module's location
 	// moduleDirectories: [
@@ -123,7 +118,9 @@ module.exports = {
 	// runner: "jest-runner",
 
 	// The paths to modules that run some code to configure or set up the testing environment before each test
-	// setupFiles: [],
+	setupFiles: [
+		'./tests/test-setup.js'
+	],
 
 	// The path to a module that runs some code to configure or set up the testing framework before each test
 	// setupTestFrameworkScriptFile: null,
@@ -141,10 +138,10 @@ module.exports = {
 	// testLocationInResults: false,
 
 	// The glob patterns Jest uses to detect test files
-	// testMatch: [
-	//   "**/__tests__/**/*.js?(x)",
-	//   "**/?(*.)+(spec|test).js?(x)"
-	// ],
+	testMatch: [
+		'**/__tests__/**/*.(t|j)s?(x)',
+		'**/?(*.)+(spec|test).(t|j)s?(x)'
+	],
 
 	// An array of regexp pattern strings that are matched against all test paths, matched tests are skipped
 	// testPathIgnorePatterns: [

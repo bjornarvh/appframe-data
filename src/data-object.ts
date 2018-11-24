@@ -12,14 +12,17 @@ import {
 	IFieldDefinition,
 	IPrivateDataObjectOptions,
 	IRecordSource,
-	IDataObjectParameters
+	IDataObjectParameters,
+	IStorageEngine,
+	IConfirmHandler,
+	IErrorHandler
 } from '../types';
 
 declare const af : Af;
 
 class DataObject extends EventEmitter implements IDataObject {
 	private _dataHandler : IDataHandler;
-	private _storageEngine = new MemoryStorage();
+	private _storageEngine : IStorageEngine = new MemoryStorage();
 	private _options : IPrivateDataObjectOptions = {
 		allowDelete: false,
 		allowUpdate: false,
@@ -82,14 +85,12 @@ class DataObject extends EventEmitter implements IDataObject {
 		getFilterObject: () => this.getParameter('filterObject'),
 		getFilterString: () => this.getParameter('filterString'),
 		getMaxRecords: () => this.getParameter('maxRecords'),
-		getMasterChildCriteria: () => this.getParameter('masterChildCriteria'),
 		getSortOrder: () => this.getParameter('sortOrder'),
 		getWhereClause: () => this.getParameter('whereClause'),
 		getWhereObject: () => this.getParameter('whereObject'),
 		setFilterObject: (value : object | null) => this.setParameter('filterObject', value),
 		setFilterString: (value : string) => this.setParameter('filterString', value),
 		setMaxRecords: (value : number) => this.setParameter('maxRecords', value),
-		setMasterChildCriteria: (value : number) => this.setParameter('masterChildCriteria', value),
 		setSortOrder: (value : Array<object>) => this.setParameter('sortOrder', value),
 		setWhereClause: (value : string) => this.setParameter('whereClause', value),
 		setWhereObject: (value : object | null) => this.setParameter('whereObject', value),
@@ -116,6 +117,10 @@ class DataObject extends EventEmitter implements IDataObject {
 
 	areParametersChanged() : boolean {
 		return this._parametersChanged;
+	}
+
+	areRecordsSaving() : boolean {
+		return false;
 	}
 
 	attachEvent(event : string, eventHandler : ListenerFn) {
@@ -148,6 +153,14 @@ class DataObject extends EventEmitter implements IDataObject {
 		return false;
 	}
 
+	canModifyCurrentRow() : boolean {
+		return false;
+	}
+
+	canModifyRow(index : number) : boolean {
+		return false;
+	}
+
 	cleanRecord(index : number, field : string | null = null) : boolean {
 		if (field === null) {
 			const wasDirty = this._recordStatus.delete(index);
@@ -169,22 +182,42 @@ class DataObject extends EventEmitter implements IDataObject {
 		return false;
 	}
 
+	clearFilter() : void {
+
+	}
+
 	currentRow() {
 
 	}
 
-	endEdit(callback? : Function) : Promise<boolean> {}
+	dataLastLoaded() : Date {
+		return new Date();
+	}
 
-	deleteCurrentRow(callback? : Function) {
+	endEdit(callback? : Function) : Promise<boolean> {
+		return new Promise((resolve, reject) => {
+
+		});
+	}
+
+	deleteCurrentRow(callback? : Function) : Promise<boolean> {
 		return new Promise((resolve, reject) => {
 	
 		});
 	}
 	
-	deleteRow(callback? : Function) {
+	deleteRow(index : number, callback? : Function) : Promise<boolean> {
 		return new Promise((resolve, reject) => {
 	
 		});
+	}
+
+	hasDirtyRecords() : boolean {
+		return false;
+	}
+
+	hasError(index : number) : boolean {
+		return false;
 	}
 	
 	initialize() {
@@ -201,11 +234,17 @@ class DataObject extends EventEmitter implements IDataObject {
 
 	}
 
-	isDataLoaded() : boolean {}
+	isDataLoaded() : boolean {
+		return false;
+	}
 
-	isDataLoading() : boolean {}
+	isDataLoading() : boolean {
+		return false;
+	}
 
-	isDeleteAllowed() : boolean {}
+	isDeleteAllowed() : boolean {
+		return this._options.allowDelete && !this._disableDelete;
+	}
 	
 	isDeleteNeverAllowed() : boolean {
 		return this._options.allowDelete;
@@ -274,6 +313,10 @@ class DataObject extends EventEmitter implements IDataObject {
 		return this._options.dataSourceId;
 	}
 
+	getDirtyData(index? : number, field? : string) : any {
+		return null;
+	}
+
 	getFields() : Array<IDataObjectField> {
 		throw new Error('Not implemented');
 	}
@@ -282,8 +325,20 @@ class DataObject extends EventEmitter implements IDataObject {
 		return Promise.resolve([]);
 	}
 
+	getGroupBy() : string {
+		return '';
+	}
+
+	getLinkFields() : object {
+		return {};
+	}
+
 	getMasterDataObject() : IDataObject | null {
 		return this._options.masterDataObject;
+	}
+
+	getMaxRecords() : number {
+		return -1;
 	}
 
 	getParameter(parameter : string) : any {
@@ -294,10 +349,12 @@ class DataObject extends EventEmitter implements IDataObject {
 		return null;
 	}
 
-	refreshCurrentRow(callback?: Function) {
-		return new Promise((resolve, reject) => {
-	
-		});
+	getUniqueIdField() : string {
+		return '';
+	}
+
+	refreshCurrentRow(callback?: Function) : Promise<boolean> {
+		return Promise.resolve(false);
 	}
 	
 	refreshDataSource(callback? : Function) : Promise<boolean> {
@@ -342,12 +399,47 @@ class DataObject extends EventEmitter implements IDataObject {
 	
 		});
 	}
+	
+	save(data : object, callback? : Function) : Promise<boolean> {
+		return Promise.resolve(false);
+	}
 
-	setAllowDelete(allow : boolean) {}
+	setAllowDelete(allow : boolean) : void {
+		if (this._options.allowDelete && this._disableDelete !== !allow) {
+			this._disableDelete = !allow;
+			this.emit('onAllowDeleteChanged', allow);
+		}
+	}
 
-	setAllowUpdate(allow : boolean) {}
+	setAllowUpdate(allow : boolean) {
+		if (this._options.allowUpdate && this._disableUpdate !== !allow) {
+			this._disableUpdate = !allow;
+			this.emit('onAllowUpdateChanged', allow);
+		}
+	}
 
-	setAllowInsert(allow : boolean) {}
+	setAllowInsert(allow : boolean) {
+		if (this._options.allowInsert && this._disableInsert !== !allow) {
+			this._disableInsert = !allow;
+			this.emit('onAllowInsertChanged', allow);
+		}
+	}
+
+	setConfirmHandler(handler: IConfirmHandler) : void {
+
+	}
+
+	setCurrentIndex(index : number | null) : boolean {
+		return false;
+	}
+
+	setErrorHandler(handler : IErrorHandler) : void {
+
+	}
+
+	setGroupBy(groupBy : string) : void {
+		
+	}
 
 	setParameter(parameter : string, value : any) {
 		const isFilterStringParam = ['filterString', 'whereClause'].includes(parameter);

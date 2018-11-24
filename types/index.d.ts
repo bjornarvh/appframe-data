@@ -51,11 +51,6 @@ export interface IDataObject {
 	getParameter(parameter : string) : any;
 	getUniqueIdField() : string;
 	hasDirtyRecords() : boolean;
-	hasError(index : number) : boolean;
-	hasField(field : string) : boolean;
-	hasIDTrig() : boolean;
-	hasIITrig() : boolean;
-	hasIUTrig() : boolean;
 	isDataLoaded() : boolean;
 	isDataLoading() : boolean;
 	isDeleteAllowed() : boolean;
@@ -63,18 +58,12 @@ export interface IDataObject {
 	isDirty(indexOrField? : string | number) : boolean;
 	isInsertAllowed() : boolean;
 	isInsertNeverAllowed() : boolean;
-	isNewRecord() : boolean;
-	isNullable(field : string) : boolean;
-	isSaving(index? : number) : boolean;
-	isStrict() : boolean;
 	isUpdateAllowed() : boolean;
 	isUpdateNeverAllowed() : boolean;
-	originalRow(field? : string) : any;
 	recordSource : IRecordSource;
-	refreshCurrentRow(callback? : Function) : Promise<object>;
+	refreshCurrentRow(callback? : Function) : Promise<boolean>;
 	refreshDataSource(callback? : Function) : Promise<boolean>;
 	refreshRow(index: number, callback? : Function) : Promise<boolean>;
-	retrievePartial(skip : number, count : number, callback? : Function) : Promise<boolean>;
 	save(data : object, callback? : Function) : Promise<boolean>;
 	setAllowDelete(allow : boolean) : void
 	setAllowInsert(allow : boolean) : void
@@ -188,20 +177,19 @@ export interface IPrivateDataObjectOptions {
 }
 
 export interface IRecordSource {
-	getFilterObject : Function
-	setFilterObject : Function
-	getFilterString : Function
-	setFilterString : Function
-	getMasterChildCriteria : Function
-	setMasterChildCriteria : Function
-	getMaxRecords : Function
-	setMaxRecords : Function
-	getSortOrder : Function
-	setSortOrder : Function
-	getWhereObject : Function
-	setWhereObject : Function
-	getWhereClause : Function
-	setWhereClause : Function
+	[index : string] : Function;
+	getFilterObject() : object | null;
+	setFilterObject(filter : object | null) : void;
+	getFilterString() : string;
+	setFilterString(filter : string) : void;
+	getMaxRecords() : number;
+	setMaxRecords(maxRecords : number) : void;
+	getSortOrder() : Array<object> | null;
+	setSortOrder(sortOrder : Array<object> | null) : void;
+	getWhereObject() : object | null;
+	setWhereObject(filter : object | null) : void;
+	getWhereClause() : string;
+	setWhereClause(filter : string) : void;
 }
 
 export interface IStorageEngine {

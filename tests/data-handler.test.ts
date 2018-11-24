@@ -1,5 +1,19 @@
-const { DataHandler } = require('../src/data-handler');
-global.fetch = require('jest-fetch-mock');
+import { DataHandler } from '../src/data-handler';
+import fetchMock from 'jest-fetch-mock';
+
+interface Object {
+	[index: string] : any;
+}
+
+const objectValues = (obj : Object) => {
+	const keys = Object.keys(obj);
+
+	return keys.map(
+		(key : string) : any => {
+			return obj[key];
+		}
+	);
+}
 
 describe('DataHandler', () => {
 	let handler = new DataHandler();
@@ -8,7 +22,7 @@ describe('DataHandler', () => {
 		handler = new DataHandler({
 			dataSourceId: 'dsTest'
 		});
-		global.fetch.resetMocks();
+		fetchMock.resetMocks();
 	});
 
 	it('gets article ID from global AF object', async () => {
@@ -19,15 +33,15 @@ describe('DataHandler', () => {
 	it('can create records', async () => {
 		const callback = jest.fn(() => null);
 		const record = { key: 'value', more: 'data' };
-		const arr = Array.from(Object.values(record));
-		fetch.mockResponse(JSON.stringify({ success: arr }));
+		const arr = objectValues(record);
+		fetchMock.mockResponse(JSON.stringify({ success: arr }));
 
 		const result = await handler.create(record, callback);
 		expect(result).toEqual(arr);
 		expect(callback).toBeCalledWith(null, arr);
-		expect(fetch.mock.calls.length).toBe(1);
+		expect(fetchMock.mock.calls.length).toBe(1);
 
-		const [request] = fetch.mock.calls;
+		const [request] = fetchMock.mock.calls;
 		expect(request[0]).toBe('/create/test-article/dsTest');
 		expect(request[1].body).toEqual(JSON.stringify(record));
 	});
@@ -35,14 +49,14 @@ describe('DataHandler', () => {
 	it('can delete records', async () => {
 		const callback = jest.fn(() => null);
 		const record = { PrimKey: 'nope' };
-		fetch.mockResponse(JSON.stringify({ success: true }));
+		fetchMock.mockResponse(JSON.stringify({ success: true }));
 
 		const result = await handler.destroy(record, callback);
 		expect(result).toBe(true);
 		expect(callback).toBeCalledWith(null, true);
-		expect(fetch.mock.calls.length).toBe(1);
+		expect(fetchMock.mock.calls.length).toBe(1);
 
-		const [request] = fetch.mock.calls;
+		const [request] = fetchMock.mock.calls;
 		expect(request[0]).toBe('/destroy/test-article/dsTest');
 		expect(request[1].body).toEqual(JSON.stringify(record));
 	});
@@ -50,15 +64,15 @@ describe('DataHandler', () => {
 	it('can update records', async () => {
 		const callback = jest.fn(() => null);
 		const record = { PrimKey: 'nope', field: 'value' };
-		const response = { success: Array.from(Object.values(record)) };
-		fetch.mockResponse(JSON.stringify(response));
+		const response = { success: objectValues(record) };
+		fetchMock.mockResponse(JSON.stringify(response));
 
 		const result = await handler.update(record, callback);
 		expect(result).toEqual(response.success);
 		expect(callback).toBeCalledWith(null, response.success);
-		expect(fetch.mock.calls.length).toBe(1);
+		expect(fetchMock.mock.calls.length).toBe(1);
 
-		const [request] = fetch.mock.calls;
+		const [request] = fetchMock.mock.calls;
 		expect(request[0]).toBe('/update/test-article/dsTest');
 		expect(request[1].body).toEqual(JSON.stringify(record));
 	});
@@ -67,15 +81,15 @@ describe('DataHandler', () => {
 		const callback = jest.fn(() => null);
 		const request = { filterString: '1 = 2' };
 		const record = { PrimKey: 'nope', field: 'value' };
-		const response = { success: Array.from(Object.values(record)) };
-		fetch.mockResponse(JSON.stringify(response));
+		const response = { success: objectValues(record) };
+		fetchMock.mockResponse(JSON.stringify(response));
 
 		const result = await handler.retrieve(request, callback);
 		expect(result).toEqual(response.success);
 		expect(callback).toBeCalledWith(null, response.success);
-		expect(fetch.mock.calls.length).toBe(1);
+		expect(fetchMock.mock.calls.length).toBe(1);
 
-		const [fetchRequest] = fetch.mock.calls;
+		const [fetchRequest] = fetchMock.mock.calls;
 		expect(fetchRequest[0]).toBe('/retrieve/test-article/dsTest');
 		expect(fetchRequest[1].body).toEqual(JSON.stringify(request));
 	});
@@ -83,7 +97,7 @@ describe('DataHandler', () => {
 	it('handles expected errors', async () => {
 		const callback = jest.fn(() => null);
 		const response = { error: ':(((' };
-		fetch.mockResponse(JSON.stringify(response));
+		fetchMock.mockResponse(JSON.stringify(response));
 
 		try {
 			await handler.retrieve({ nope: 'nope' }, callback);
@@ -97,7 +111,7 @@ describe('DataHandler', () => {
 	it('returns false if it times out', async () => {
 		const callback = jest.fn(() => null);
 		handler.timeout = 0;
-		fetch.mockResponse('{success:false}');
+		fetchMock.mockResponse('{success:false}');
 
 		const result = await handler.retrieve({ filterString: '1 = 2' }, callback);
 
