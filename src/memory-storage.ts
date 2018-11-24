@@ -1,7 +1,8 @@
+import { IStorageEngine } from '../types';
 const invalidIndexError = 'Index must be a number and be within the range of the data indices.';
 const invalidRecordError = 'Record must be an object';
 
-export class MemoryStorage {
+export class MemoryStorage implements IStorageEngine {
 	data : Array<object> = [];
 
 	/**
@@ -57,8 +58,8 @@ export class MemoryStorage {
 	 * 
 	 * @param index Index of the record to be retrieved
 	 */
-	retrieve(index : number | null = null) : Array<object> | object | null {
-		if (index === null) {
+	retrieve(index? : number) : Array<object> | object | null {
+		if (typeof index === 'undefined') {
 			return this.data;
 		} else if (this.isValidIndex(index)) {
 			return this.data[index];

@@ -203,3 +203,11 @@ export interface IRecordSource {
 	getWhereClause : Function
 	setWhereClause : Function
 }
+
+export interface IStorageEngine {
+	create(record : object) : number;
+	destroy(index : number) : void;
+	length() : number;
+	retrieve(index? : number);
+	update(index : number, data : Array<any> | object) : void;
+}
