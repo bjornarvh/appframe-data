@@ -180,6 +180,6 @@ export interface IStorageEngine {
 	create(record : object) : number;
 	destroy(index : number) : void;
 	length() : number;
-	retrieve(index? : number);
+	retrieve(index? : number) : Array<object> | object | null;
 	update(index : number, data : Array<any> | object) : void;
 }
