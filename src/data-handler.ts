@@ -48,7 +48,7 @@ export class DataHandler implements IDataHandler {
 	 * @param data Record that should be added
 	 * @param callback Callback when the record has been created
 	 */
-	create(data : object, callback : Function) : Promise<object | boolean> {
+	create(data : object, callback? : Function) : Promise<object | boolean> {
 		return this.request('create', data, callback);
 	}
 	
@@ -58,7 +58,7 @@ export class DataHandler implements IDataHandler {
 	 * @param data Object containing primkey of the record to delete
 	 * @param callback Callback when the record has been created/an error has occured
 	 */
-	destroy(data : IRecordDataOptions, callback : Function) : Promise<object | boolean> {
+	destroy(data : IRecordDataOptions, callback? : Function) : Promise<object | boolean> {
 		return this.request('destroy', data, callback);
 	}
 	
@@ -68,7 +68,7 @@ export class DataHandler implements IDataHandler {
 	 * @param data Request parameters
 	 * @param callback Callback when the record has been created/an error has occured
 	 */
-	retrieve(data : IDataObjectParameters, callback : Function) : Promise<object | boolean> {
+	retrieve(data : IDataObjectParameters, callback? : Function) : Promise<object | boolean> {
 		return this.request('retrieve', data, callback);
 	}
 	
@@ -78,17 +78,18 @@ export class DataHandler implements IDataHandler {
 	 * @param data Object containing PrimKey and any updated fields.
 	 * @param callback Callback when the record has been updated/an error has occured
 	 */
-	update(data : IRecordDataOptions, callback : Function) : Promise<object | boolean> {
+	update(data : IRecordDataOptions, callback? : Function) : Promise<object | boolean> {
 		return this.request('update', data, callback);
 	}
 	
-	request(type : string, data : object, callback : Function) : Promise<object | false> {
+	request(type : string, data : object, callback? : Function) : Promise<object | false> {
 		return new Promise((resolve, reject) => {
 			const options : RequestInit = {
 				body: JSON.stringify(data),
 				method: 'POST',
 				headers: {
-					'Content-Type': 'application/json; charset=utf-8'
+					'Content-Type': 'application/json; charset=utf-8',
+					'X-Requested-With': 'XMLHttpRequest'
 				}
 			};
 
@@ -105,7 +106,7 @@ export class DataHandler implements IDataHandler {
 				url += '/' + this.groupBy;
 			}
 		
-			if (typeof AbortController !== 'undefined') {
+			if (type === 'retrieve' && typeof AbortController !== 'undefined') {
 				if (this.previousController) {
 					this.previousController.abort();
 				}
@@ -131,7 +132,7 @@ export class DataHandler implements IDataHandler {
 					clearTimeout(timeout);
 					if (isTimedOut) {
 						return Promise.resolve(false);
-					} else if (controller && this.previousController !== controller) {
+					} else if (type === 'retrieve' && controller && this.previousController !== controller) {
 						return Promise.resolve(false);
 					}
 		
