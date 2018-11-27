@@ -17,6 +17,7 @@ export class DataHandler implements IDataHandler {
 	groupBy : Array<string> | null;
 	timeout : number;
 
+	private retrieveCounter : number = 0;
 	private previousController : AbortController | null = null;
 
 	constructor(options : IDataHandlerOptions = {}) {
@@ -94,6 +95,7 @@ export class DataHandler implements IDataHandler {
 			};
 
 			let controller : AbortController | null = null;
+			let requestId = 0;
 		
 			let url = `/${type}/${this.articleId}/${this.dataSourceId}`;
 			let isTimedOut = false;
@@ -104,6 +106,10 @@ export class DataHandler implements IDataHandler {
 		
 			if (this.groupBy) {
 				url += '/' + this.groupBy;
+			}
+
+			if (type === 'retrieve') {
+				requestId = ++this.retrieveCounter;
 			}
 		
 			if (type === 'retrieve' && typeof AbortController !== 'undefined') {
@@ -131,8 +137,11 @@ export class DataHandler implements IDataHandler {
 				.then(result => {
 					clearTimeout(timeout);
 					if (isTimedOut) {
+						console.log('was timed out', options.body);
 						return Promise.resolve(false);
 					} else if (type === 'retrieve' && controller && this.previousController !== controller) {
+						return Promise.resolve(false);
+					} else if (type === 'retrieve' && requestId !== this.retrieveCounter) {
 						return Promise.resolve(false);
 					}
 		
