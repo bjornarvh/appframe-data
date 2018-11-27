@@ -1,4 +1,4 @@
-const { fireCallback } = require('../src/common');
+import { fireCallback } from '../src/common';
 
 describe('fireCallback', () => {
 	it('calls the callback with all the arguments', () => {
