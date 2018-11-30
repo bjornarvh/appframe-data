@@ -176,6 +176,41 @@ export interface IRecordSource {
 	setWhereClause(filter : string) : void;
 }
 
+export interface IReducer {
+	[index : string] : IReducerFunction
+}
+
+export interface IReducerFunction {
+	(store : object, action : IReduxAction) : object
+}
+
+export interface IReduxAction {
+	type: string;
+	payload: object | null;
+}
+
+export interface IReduxDataObject {
+	deleteRecordFailure(primKey : string, error : string) : IReduxAction;
+	deleteRecordRequest(primKey : string) : IReduxAction;
+	deleteRecordSuccess(primKey : string) : IReduxAction;
+	fetchDataFailure(error : string) : IReduxAction;
+	fetchDataRequest() : IReduxAction;
+	fetchDataSuccess(data : any) : IReduxAction;
+	saveRecordFailure(primKey : string, error : string) : IReduxAction;
+	saveRecordRequest(primKey : string) : IReduxAction;
+	saveRecordSuccess(primKey : string, record : any) : IReduxAction
+	setField(field : string | object, value? : any) : IReduxAction;
+	setAllowDelete(allow : boolean) : IReduxAction;
+	setAllowInsert(allow : boolean) : IReduxAction;
+	setAllowUpdate(allow : boolean) : IReduxAction;
+	setFilterObject(filterObject : object | null) : IReduxAction;
+	setFilterString(filterString : string) : IReduxAction;
+	setMaxRecords(maxRecords : number) : IReduxAction;
+	setSortOrder(sortOrder : Array<object> | null) : IReduxAction;
+	setWhereClause(whereClause : string) : IReduxAction;
+	setWhereObject(whereObject : object | null) : IReduxAction;
+}
+
 export interface IStorageEngine {
 	create(record : object) : number;
 	destroy(index : number) : void;

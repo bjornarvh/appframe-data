@@ -4,7 +4,7 @@ import { DataHandler } from './data-handler';
 import { MemoryStorage } from './memory-storage';
 import { fireCallback } from './common';
 import {
-	Af,
+	Appframe,
 	IDataObjectOptions,
 	IDataHandler,
 	IDataObject,
@@ -17,7 +17,7 @@ import {
 	IConfirmHandler,
 } from '../types';
 
-declare const af : Af;
+declare const af : Appframe;
 
 class DataObject extends EventEmitter implements IDataObject {
 	private _dataHandler : IDataHandler;
