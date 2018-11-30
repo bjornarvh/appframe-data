@@ -23,6 +23,7 @@ const config = {
 
 module.exports = (env, argv) => {
 	if (argv.mode === 'production') {
+		process.env.NODE_ENV = 'production';
 		config.output.filename = 'data-object.min.js';
 	} else {
 		config.output.filename = 'data-object.js';
