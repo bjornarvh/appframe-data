@@ -30,6 +30,8 @@ export class ReduxDataObject implements IReduxDataObject {
 		return {
 			payload: {
 				dataSourceId: this.options.dataSourceId,
+				error,
+				primKey
 			},
 			type: 'DELETE_RECORD_FAILURE',	
 		}
@@ -39,6 +41,7 @@ export class ReduxDataObject implements IReduxDataObject {
 		return {
 			payload: {
 				dataSourceId: this.options.dataSourceId,
+				primKey
 			},
 			type: 'DELETE_RECORD_REQUEST',	
 		}
@@ -48,6 +51,7 @@ export class ReduxDataObject implements IReduxDataObject {
 		return {
 			payload: {
 				dataSourceId: this.options.dataSourceId,
+				primKey
 			},
 			type: 'DELETE_RECORD_SUCCESS',	
 		}
@@ -57,6 +61,7 @@ export class ReduxDataObject implements IReduxDataObject {
 		return {
 			payload: {
 				dataSourceId: this.options.dataSourceId,
+				error
 			},
 			type: 'FETCH_DATA_FAILURE',	
 		}
@@ -119,6 +124,7 @@ export class ReduxDataObject implements IReduxDataObject {
 	setAllowDelete(allow : boolean) : IReduxAction {
 		return {
 			payload: {
+				allowDelete: this.options.allowDelete && allow,
 				dataSourceId: this.options.dataSourceId,
 			},
 			type: 'SET_ALLOW_DELETE',	
@@ -128,6 +134,7 @@ export class ReduxDataObject implements IReduxDataObject {
 	setAllowInsert(allow : boolean) : IReduxAction {
 		return {
 			payload: {
+				allowInsert: this.options.allowInsert && allow,
 				dataSourceId: this.options.dataSourceId,
 			},
 			type: 'SET_ALLOW_INSERT',	
@@ -137,6 +144,7 @@ export class ReduxDataObject implements IReduxDataObject {
 	setAllowUpdate(allow : boolean) : IReduxAction {
 		return {
 			payload: {
+				allowUpdate: this.options.allowUpdate && allow,
 				dataSourceId: this.options.dataSourceId,
 			},
 			type: 'SET_ALLOW_UPDATE',	
@@ -147,6 +155,7 @@ export class ReduxDataObject implements IReduxDataObject {
 		return {
 			payload: {
 				dataSourceId: this.options.dataSourceId,
+				filterObject
 			},
 			type: 'SET_FILTER_OBJECT',	
 		}
@@ -156,6 +165,7 @@ export class ReduxDataObject implements IReduxDataObject {
 		return {
 			payload: {
 				dataSourceId: this.options.dataSourceId,
+				filterString
 			},
 			type: 'SET_FILTER_STRING',	
 		}
@@ -165,6 +175,7 @@ export class ReduxDataObject implements IReduxDataObject {
 		return {
 			payload: {
 				dataSourceId: this.options.dataSourceId,
+				maxRecords
 			},
 			type: 'SET_MAX_RECORDS',	
 		}
@@ -174,6 +185,7 @@ export class ReduxDataObject implements IReduxDataObject {
 		return {
 			payload: {
 				dataSourceId: this.options.dataSourceId,
+				sortOrder
 			},
 			type: 'SET_SORT_ORDER',	
 		}
@@ -183,6 +195,7 @@ export class ReduxDataObject implements IReduxDataObject {
 		return {
 			payload: {
 				dataSourceId: this.options.dataSourceId,
+				whereClause
 			},
 			type: 'SET_WHERE_CLAUSE',	
 		}
@@ -192,6 +205,7 @@ export class ReduxDataObject implements IReduxDataObject {
 		return {
 			payload: {
 				dataSourceId: this.options.dataSourceId,
+				whereObject
 			},
 			type: 'SET_WHERE_OBJECT',	
 		}

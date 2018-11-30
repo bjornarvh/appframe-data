@@ -175,18 +175,22 @@ export interface IRecordSource {
 	getWhereClause() : string;
 	setWhereClause(filter : string) : void;
 }
-
 export interface IReducer {
-	[index : string] : IReducerFunction
-}
-
-export interface IReducerFunction {
-	(store : object, action : IReduxAction) : object
+	(store : IReduxState, action : IReduxAction) : IReduxState
 }
 
 export interface IReduxAction {
 	type: string;
-	payload: object | null;
+	payload: IReduxActionPayload;
+}
+
+export interface IReduxActionPayload {
+	[index : string] : any;
+	dataSourceId : string;
+}
+
+export interface IReduxState {
+	[index : string] : any;
 }
 
 export interface IReduxDataObject {
