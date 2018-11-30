@@ -1,6 +1,6 @@
 import { ListenerFn } from "eventemitter3";
 
-export interface Af {
+export interface Appframe {
 	article : AfArticle
 }
 
@@ -198,7 +198,7 @@ export interface IReduxDataObject {
 	fetchDataSuccess(data : any) : IReduxAction;
 	saveRecordFailure(primKey : string, error : string) : IReduxAction;
 	saveRecordRequest(primKey : string) : IReduxAction;
-	saveRecordSuccess(primKey : string, record : any) : IReduxAction
+	saveRecordSuccess(primKey : string, record : any) : IReduxAction;
 	setField(field : string | object, value? : any) : IReduxAction;
 	setAllowDelete(allow : boolean) : IReduxAction;
 	setAllowInsert(allow : boolean) : IReduxAction;

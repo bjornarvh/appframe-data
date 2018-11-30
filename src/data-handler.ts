@@ -1,13 +1,13 @@
 import { fireCallback } from './common';
 import {
-	Af,
+	Appframe,
 	IDataHandler,
 	IDataHandlerOptions,
 	IRecordDataOptions,
 	IDataObjectParameters
 } from '../types';
 
-declare const af : Af;
+declare const af : Appframe;
 declare const AbortError : Function;
 
 export class DataHandler implements IDataHandler {

@@ -110,13 +110,15 @@ describe('DataHandler', () => {
 
 	it('returns false if it times out', async () => {
 		const callback = jest.fn(() => null);
-		handler.timeout = 0;
-		fetchMock.mockResponse('{success:false}');
+		handler.timeout = 10;
+		fetchMock.mockResponse(() => new Promise((resolve, reject) => {
+			setTimeout(() => {
+				resolve({ body: '{success:true}' });
+			}, 1000)
+		}));
 
 		const result = await handler.retrieve({ filterString: '1 = 2' }, callback);
 
-		// Waiting for jest-fetch-mock to add support for delayed response
-		// PR: https://github.com/jefflau/jest-fetch-mock/pull/75/commits/dea14d3ef0d601a135ac361a4926db808aef7094
 		expect(result).toBe(false);
 		expect(callback).toBeCalledTimes(0);
 	});
