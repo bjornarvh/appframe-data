@@ -73,4 +73,5 @@ typings/
 .serverless
 .env
 
+dist/
 test/testsource.js
