@@ -82,7 +82,7 @@ export interface IDataObjectOptions {
 	articleId? : string;
 	fields? : Array<IDataObjectField>;
 	dataHandler? : IDataHandler;
-	dataSourceId? : string;
+	dataSourceId : string;
 	disableAutoload? : boolean;
 	dynamicLoading? : boolean;
 	groupBy? : object;
@@ -144,7 +144,7 @@ export interface IPrivateDataObjectOptions {
 	allowInsert : boolean;
 	articleId : string;
 	confirmHandler : IConfirmHandler;
-	dataSourceId : string | null;
+	dataSourceId : string;
 	disableAutoload : boolean;
 	dynamicLoading : boolean;
 	fields : Array<IDataObjectField>;

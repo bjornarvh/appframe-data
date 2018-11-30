@@ -7,16 +7,23 @@ import {
 	IDataObjectOptions,
 	IPrivateDataObjectOptions,
 	IReduxAction,
-	IReduxDataObject
+	IReduxDataObject,
+	IDataHandler
 } from '../types';
 
 declare const af : Appframe;
 
 export class ReduxDataObject implements IReduxDataObject {
+	private dataHandler : IDataHandler
 	private options : IPrivateDataObjectOptions;
 
 	constructor(options : IDataObjectOptions) {
 		this.options = merge(defaults, options);
+		this.dataHandler = options.dataHandler || new DataHandler({
+			articleId: this.options.articleId,
+			dataSourceId: this.options.dataSourceId,
+			timeout: this.options.timeout
+		});
 	}
 
 	deleteRecordFailure(primKey : string, error : string) : IReduxAction {

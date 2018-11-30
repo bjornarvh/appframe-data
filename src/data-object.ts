@@ -1,6 +1,8 @@
 /* eslint-disable no-console */
 import EventEmitter, { ListenerFn } from 'eventemitter3';
+import merge from 'deepmerge';
 import { DataHandler } from './data-handler';
+import { defaults } from './data-object-options';
 import { MemoryStorage } from './memory-storage';
 import { fireCallback } from './common';
 import {
@@ -22,45 +24,7 @@ declare const af : Appframe;
 class DataObject extends EventEmitter implements IDataObject {
 	private _dataHandler : IDataHandler;
 	private _storageEngine : IStorageEngine = new MemoryStorage();
-	private _options : IPrivateDataObjectOptions = {
-		allowDelete: false,
-		allowUpdate: false,
-		allowInsert: false,
-		articleId: af && af.article && af.article.id,
-		confirmHandler: function(title : string, question : string, yes : string, no : string, cancel : string) : Promise<boolean> {
-			return new Promise((resolve, reject) => {
-				if (confirm(question)) {
-					resolve(true);
-				} else {
-					reject(cancel);
-				}
-			});
-		},
-		dataSourceId: null,
-		disableAutoload: false,
-		dynamicLoading: false,
-		fields: [],
-		groupBy: null,
-		linkFields: null,
-		masterDataObject: null,
-		optimisticLocking: false,
-		parameters: {
-			distinctRows: false,
-			filterObject: null,
-			filterString: '',
-			masterChildCriteria: {},
-			maxRecords: -1,
-			sortOrder: [],
-			whereObject: null,
-			whereClause: '',
-		},
-		selectFirstRow: true,
-		strict: false,
-		systemFieldNames: {},
-		timeout: 30000,
-		uniqueIdField: 'PrimKey',
-	};
-
+	private _options : IPrivateDataObjectOptions;
 	private _fields : Array<IFieldDefinition> = [];
 	private _parametersChanged = false;
 	private _currentIndex : number | null = null;
@@ -88,16 +52,10 @@ class DataObject extends EventEmitter implements IDataObject {
 		setWhereObject: (value : object | null) => this.setParameter('whereObject', value),
 	};
 
-	constructor(options : IDataObjectOptions = {}) {
+	constructor(options : IDataObjectOptions) {
 		super();
 
-		const _options : IPrivateDataObjectOptions = Object.assign({}, this._options);
-		const parameters : IDataObjectParameters = Object.assign(
-			this._options.parameters,
-			options.parameters
-		);
-
-		this._options = Object.assign(_options, options, { parameters: parameters });
+		this._options = merge(defaults, options);
 		this._dataHandler = options.dataHandler || new DataHandler({
 			articleId: options.articleId,
 			dataSourceId: options.dataSourceId,
