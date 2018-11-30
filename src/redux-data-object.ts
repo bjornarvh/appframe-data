@@ -31,7 +31,7 @@ export class ReduxDataObject implements IReduxDataObject {
 			payload: {
 				dataSourceId: this.options.dataSourceId,
 			},
-			type: 'deleteRecordFailure',	
+			type: 'DELETE_RECORD_FAILURE',	
 		}
 	}
 
@@ -40,7 +40,7 @@ export class ReduxDataObject implements IReduxDataObject {
 			payload: {
 				dataSourceId: this.options.dataSourceId,
 			},
-			type: 'deleteRecordRequest',	
+			type: 'DELETE_RECORD_REQUEST',	
 		}
 	}
 
@@ -49,7 +49,7 @@ export class ReduxDataObject implements IReduxDataObject {
 			payload: {
 				dataSourceId: this.options.dataSourceId,
 			},
-			type: 'deleteRecordSuccess',	
+			type: 'DELETE_RECORD_SUCCESS',	
 		}
 	}
 
@@ -58,7 +58,7 @@ export class ReduxDataObject implements IReduxDataObject {
 			payload: {
 				dataSourceId: this.options.dataSourceId,
 			},
-			type: 'fetchDataFailure',	
+			type: 'FETCH_DATA_FAILURE',	
 		}
 	}
 
@@ -67,7 +67,7 @@ export class ReduxDataObject implements IReduxDataObject {
 			payload: {
 				dataSourceId: this.options.dataSourceId,
 			},
-			type: 'fetchDataRequest',	
+			type: 'FETCH_DATA_REQUEST',	
 		}
 	}
 
@@ -76,7 +76,7 @@ export class ReduxDataObject implements IReduxDataObject {
 			payload: {
 				dataSourceId: this.options.dataSourceId,
 			},
-			type: 'fetchDataSuccess',	
+			type: 'FETCH_DATA_SUCCESS',	
 		}
 	}
 
@@ -85,7 +85,7 @@ export class ReduxDataObject implements IReduxDataObject {
 			payload: {
 				dataSourceId: this.options.dataSourceId,
 			},
-			type: 'saveRecordFailure',	
+			type: 'SAVE_RECORD_FAILURE',	
 		}
 	}
 
@@ -94,7 +94,7 @@ export class ReduxDataObject implements IReduxDataObject {
 			payload: {
 				dataSourceId: this.options.dataSourceId,
 			},
-			type: 'saveRecordRequest',	
+			type: 'SAVE_RECORD_REQUEST',	
 		}
 	}
 
@@ -103,7 +103,7 @@ export class ReduxDataObject implements IReduxDataObject {
 			payload: {
 				dataSourceId: this.options.dataSourceId,
 			},
-			type: 'saveRecordSuccess',	
+			type: 'SAVE_RECORD_SUCCESS',	
 		}
 	}
 
@@ -112,7 +112,7 @@ export class ReduxDataObject implements IReduxDataObject {
 			payload: {
 				dataSourceId: this.options.dataSourceId,
 			},
-			type: 'setField',	
+			type: 'SET_FIELD',	
 		}
 	}
 
@@ -121,7 +121,7 @@ export class ReduxDataObject implements IReduxDataObject {
 			payload: {
 				dataSourceId: this.options.dataSourceId,
 			},
-			type: 'setAllowDelete',	
+			type: 'SET_ALLOW_DELETE',	
 		}
 	}
 
@@ -130,7 +130,7 @@ export class ReduxDataObject implements IReduxDataObject {
 			payload: {
 				dataSourceId: this.options.dataSourceId,
 			},
-			type: 'setAllowInsert',	
+			type: 'SET_ALLOW_INSERT',	
 		}
 	}
 
@@ -139,7 +139,7 @@ export class ReduxDataObject implements IReduxDataObject {
 			payload: {
 				dataSourceId: this.options.dataSourceId,
 			},
-			type: 'setAllowUpdate',	
+			type: 'SET_ALLOW_UPDATE',	
 		}
 	}
 
@@ -148,7 +148,7 @@ export class ReduxDataObject implements IReduxDataObject {
 			payload: {
 				dataSourceId: this.options.dataSourceId,
 			},
-			type: 'setFilterObject',	
+			type: 'SET_FILTER_OBJECT',	
 		}
 	}
 
@@ -157,7 +157,7 @@ export class ReduxDataObject implements IReduxDataObject {
 			payload: {
 				dataSourceId: this.options.dataSourceId,
 			},
-			type: 'setFilterString',	
+			type: 'SET_FILTER_STRING',	
 		}
 	}
 
@@ -166,7 +166,7 @@ export class ReduxDataObject implements IReduxDataObject {
 			payload: {
 				dataSourceId: this.options.dataSourceId,
 			},
-			type: 'setMaxRecords',	
+			type: 'SET_MAX_RECORDS',	
 		}
 	}
 
@@ -175,7 +175,7 @@ export class ReduxDataObject implements IReduxDataObject {
 			payload: {
 				dataSourceId: this.options.dataSourceId,
 			},
-			type: 'setSortOrder',	
+			type: 'SET_SORT_ORDER',	
 		}
 	}
 
@@ -184,7 +184,7 @@ export class ReduxDataObject implements IReduxDataObject {
 			payload: {
 				dataSourceId: this.options.dataSourceId,
 			},
-			type: 'setWhereClause',	
+			type: 'SET_WHERE_CLAUSE',	
 		}
 	}
 
@@ -193,7 +193,7 @@ export class ReduxDataObject implements IReduxDataObject {
 			payload: {
 				dataSourceId: this.options.dataSourceId,
 			},
-			type: 'setWhereObject',	
+			type: 'SET_WHERE_OBJECT',	
 		}
 	}
 
