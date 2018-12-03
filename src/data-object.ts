@@ -7,14 +7,14 @@ import { MemoryStorage } from './memory-storage';
 import { fireCallback } from './common';
 import {
 	Appframe,
-	IDataObjectOptions,
+	DataObjectOptions,
 	IDataHandler,
 	IDataObject,
 	IDataObjectField,
-	IFieldDefinition,
-	IPrivateDataObjectOptions,
+	FieldDefinition,
+	PrivateDataObjectOptions,
 	IRecordSource,
-	IDataObjectParameters,
+	DataObjectParameters,
 	IStorageEngine,
 	IConfirmHandler,
 } from '../types';
@@ -24,8 +24,8 @@ declare const af : Appframe;
 class DataObject extends EventEmitter implements IDataObject {
 	private _dataHandler : IDataHandler;
 	private _storageEngine : IStorageEngine = new MemoryStorage();
-	private _options : IPrivateDataObjectOptions;
-	private _fields : Array<IFieldDefinition> = [];
+	private _options : PrivateDataObjectOptions;
+	private _fields : Array<FieldDefinition> = [];
 	private _parametersChanged = false;
 	private _currentIndex : number | null = null;
 	private _currentLoadingPromise : Promise<boolean> | null = null;
@@ -52,7 +52,7 @@ class DataObject extends EventEmitter implements IDataObject {
 		setWhereObject: (value : object | null) => this.setParameter('whereObject', value),
 	};
 
-	constructor(options : IDataObjectOptions) {
+	constructor(options : DataObjectOptions) {
 		super();
 
 		this._options = merge(defaults, options);
@@ -255,7 +255,7 @@ class DataObject extends EventEmitter implements IDataObject {
 		throw new Error('Not implemented');
 	}
 
-	getFieldsAsync() : Promise<Array<IFieldDefinition>> {
+	getFieldsAsync() : Promise<Array<FieldDefinition>> {
 		return Promise.resolve([]);
 	}
 

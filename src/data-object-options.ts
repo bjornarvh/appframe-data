@@ -1,4 +1,4 @@
-import { Appframe, IPrivateDataObjectOptions } from '../types';
+import { Appframe } from '../types';
 
 declare const af : Appframe;
 

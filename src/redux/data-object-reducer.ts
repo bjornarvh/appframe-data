@@ -1,4 +1,4 @@
-import { IReducer, IReduxAction, IReduxState } from "../types";
+import { IReducer, IReduxAction, IReduxState } from "../../types";
 
 function mergeState(state : IReduxState, dataSourceId : string, changes : object) : IReduxState {
 	const current = state[dataSourceId];

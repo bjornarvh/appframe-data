@@ -1,23 +1,23 @@
 import merge from 'deepmerge';
 
-import { DataHandler } from './data-handler';
-import { defaults } from './data-object-options';
+import { DataHandler } from '../data-handler';
+import { defaults } from '../data-object-options';
 import {
 	Appframe,
-	IDataObjectOptions,
-	IPrivateDataObjectOptions,
+	DataObjectOptions,
+	PrivateDataObjectOptions,
 	IReduxAction,
 	IReduxDataObject,
 	IDataHandler
-} from '../types';
+} from '../../types';
 
 declare const af : Appframe;
 
 export class ReduxDataObject implements IReduxDataObject {
 	private dataHandler : IDataHandler
-	private options : IPrivateDataObjectOptions;
+	private options : PrivateDataObjectOptions;
 
-	constructor(options : IDataObjectOptions) {
+	constructor(options : DataObjectOptions) {
 		this.options = merge(defaults, options);
 		this.dataHandler = options.dataHandler || new DataHandler({
 			articleId: this.options.articleId,

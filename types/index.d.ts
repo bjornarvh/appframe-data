@@ -4,8 +4,13 @@ export interface Appframe {
 	article : AfArticle
 }
 
+export interface AfDataObjects {
+	[index : string] : IDataObject | IReduxDataObject
+}
+
 export interface AfArticle {
-	id : string
+	id : string,
+	dataObjects: AfDataObjects;
 }
 
 export interface IDataHandler {
@@ -15,7 +20,7 @@ export interface IDataHandler {
 	update(data : object, callback : Function) : Promise<object | boolean>;
 }
 
-export interface IDataHandlerOptions {
+export type DataHandlerOptions = {
 	articleId? : string,
 	dataSourceId? : string,
 	fields? : Array<string> | string,
@@ -75,7 +80,7 @@ export interface IDataObjectField {
 
 }
 
-export interface IDataObjectOptions {
+export type DataObjectOptions = {
 	allowDelete ? : boolean;
 	allowUpdate? : boolean;
 	allowInsert? : boolean;
@@ -89,7 +94,7 @@ export interface IDataObjectOptions {
 	linkFields? : object;
 	masterDataObject? : IDataObject;
 	optimisticLocking? : boolean;
-	parameters? : IDataObjectParameters;
+	parameters? : DataObjectParameters;
 	selectFirstRow? : boolean;
 	strict? : boolean;
 	systemFieldNames? : object;
@@ -97,7 +102,7 @@ export interface IDataObjectOptions {
 	uniqueIdField? : string;
 }
 
-export interface IFieldDefinition {
+export type FieldDefinition = {
 	aliasName : string | null
 	caption : string;
 	computed : boolean;
@@ -117,7 +122,7 @@ export interface IRecordDataOptions {
 	PrimKey: string
 }
 
-export interface IDataObjectParameters {
+export type DataObjectParameters = {
 	[index : string] : any;
 	distinctRows? : boolean;
 	filterObject? : object | null;
@@ -138,7 +143,7 @@ export interface IConfirmHandler {
 	(title : string, question : string, yes : string, no : string, cancel : string) : Promise<boolean>
 }
 
-export interface IPrivateDataObjectOptions {
+export type PrivateDataObjectOptions = {
 	allowDelete : boolean;
 	allowUpdate : boolean;
 	allowInsert : boolean;
@@ -152,7 +157,7 @@ export interface IPrivateDataObjectOptions {
 	linkFields : object | null;
 	masterDataObject : IDataObject | null;
 	optimisticLocking : boolean;
-	parameters : IDataObjectParameters;
+	parameters : DataObjectParameters;
 	selectFirstRow : boolean;
 	strict : boolean;
 	systemFieldNames : object;

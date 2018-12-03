@@ -1,10 +1,10 @@
 import { fireCallback } from './common';
 import {
 	Appframe,
+	DataHandlerOptions,
 	IDataHandler,
-	IDataHandlerOptions,
 	IRecordDataOptions,
-	IDataObjectParameters
+	DataObjectParameters
 } from '../types';
 
 declare const af : Appframe;
@@ -19,7 +19,7 @@ export class DataHandler implements IDataHandler {
 
 	private previousController : AbortController | null = null;
 
-	constructor(options : IDataHandlerOptions = {}) {
+	constructor(options : DataHandlerOptions = {}) {
 		const {
 			articleId,
 			dataSourceId,
@@ -68,7 +68,7 @@ export class DataHandler implements IDataHandler {
 	 * @param data Request parameters
 	 * @param callback Callback when the record has been created/an error has occured
 	 */
-	retrieve(data : IDataObjectParameters, callback : Function) : Promise<object | boolean> {
+	retrieve(data : DataObjectParameters, callback : Function) : Promise<object | boolean> {
 		return this.request('retrieve', data, callback);
 	}
 	
