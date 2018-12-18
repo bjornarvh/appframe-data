@@ -69,7 +69,7 @@ export class DataHandler implements IDataHandler {
 	 * @param data Request parameters
 	 * @param callback Callback when the record has been created/an error has occured
 	 */
-	retrieve(data : DataObjectParameters, callback : Function) : Promise<object | boolean> {
+	retrieve(data : DataObjectParameters, callback? : Function) : Promise<object | boolean> {
 		return this.request('retrieve', data, callback);
 	}
 	
