@@ -1,11 +1,16 @@
 import { ListenerFn } from "eventemitter3";
 
-export interface Af {
+export interface Appframe {
 	article : AfArticle
 }
 
+export interface AfDataObjects {
+	[index : string] : IDataObject | IReduxDataObject
+}
+
 export interface AfArticle {
-	id : string
+	id : string,
+	dataObjects: AfDataObjects;
 }
 
 export interface IDataHandler {
@@ -15,7 +20,7 @@ export interface IDataHandler {
 	update(data : object, callback : Function) : Promise<object | boolean>;
 }
 
-export interface IDataHandlerOptions {
+export type DataHandlerOptions = {
 	articleId? : string,
 	dataSourceId? : string,
 	fields? : Array<string> | string,
@@ -75,21 +80,21 @@ export interface IDataObjectField {
 
 }
 
-export interface IDataObjectOptions {
+export type DataObjectOptions = {
 	allowDelete ? : boolean;
 	allowUpdate? : boolean;
 	allowInsert? : boolean;
 	articleId? : string;
 	fields? : Array<IDataObjectField>;
 	dataHandler? : IDataHandler;
-	dataSourceId? : string;
+	dataSourceId : string;
 	disableAutoload? : boolean;
 	dynamicLoading? : boolean;
 	groupBy? : object;
 	linkFields? : object;
 	masterDataObject? : IDataObject;
 	optimisticLocking? : boolean;
-	parameters? : IDataObjectParameters;
+	parameters? : DataObjectParameters;
 	selectFirstRow? : boolean;
 	strict? : boolean;
 	systemFieldNames? : object;
@@ -97,7 +102,7 @@ export interface IDataObjectOptions {
 	uniqueIdField? : string;
 }
 
-export interface IFieldDefinition {
+export type FieldDefinition = {
 	aliasName : string | null
 	caption : string;
 	computed : boolean;
@@ -117,7 +122,7 @@ export interface IRecordDataOptions {
 	PrimKey: string
 }
 
-export interface IDataObjectParameters {
+export type DataObjectParameters = {
 	[index : string] : any;
 	distinctRows? : boolean;
 	filterObject? : object | null;
@@ -138,13 +143,13 @@ export interface IConfirmHandler {
 	(title : string, question : string, yes : string, no : string, cancel : string) : Promise<boolean>
 }
 
-export interface IPrivateDataObjectOptions {
+export type PrivateDataObjectOptions = {
 	allowDelete : boolean;
 	allowUpdate : boolean;
 	allowInsert : boolean;
 	articleId : string;
 	confirmHandler : IConfirmHandler;
-	dataSourceId : string | null;
+	dataSourceId : string;
 	disableAutoload : boolean;
 	dynamicLoading : boolean;
 	fields : Array<IDataObjectField>;
@@ -152,7 +157,7 @@ export interface IPrivateDataObjectOptions {
 	linkFields : object | null;
 	masterDataObject : IDataObject | null;
 	optimisticLocking : boolean;
-	parameters : IDataObjectParameters;
+	parameters : DataObjectParameters;
 	selectFirstRow : boolean;
 	strict : boolean;
 	systemFieldNames : object;
@@ -174,6 +179,45 @@ export interface IRecordSource {
 	setWhereObject(filter : object | null) : void;
 	getWhereClause() : string;
 	setWhereClause(filter : string) : void;
+}
+export interface IReducer {
+	(store : IReduxState, action : IReduxAction) : IReduxState
+}
+
+export interface IReduxAction {
+	type: string;
+	payload: IReduxActionPayload;
+}
+
+export interface IReduxActionPayload {
+	[index : string] : any;
+	dataSourceId : string;
+}
+
+export interface IReduxState {
+	[index : string] : any;
+}
+
+export interface IReduxDataObject {
+	deleteRecordFailure(primKey : string, error : string) : IReduxAction;
+	deleteRecordRequest(primKey : string) : IReduxAction;
+	deleteRecordSuccess(primKey : string) : IReduxAction;
+	fetchDataFailure(error : string) : IReduxAction;
+	fetchDataRequest() : IReduxAction;
+	fetchDataSuccess(data : any) : IReduxAction;
+	saveRecordFailure(primKey : string, error : string) : IReduxAction;
+	saveRecordRequest(primKey : string) : IReduxAction;
+	saveRecordSuccess(primKey : string, record : any) : IReduxAction;
+	setField(field : string | object, value? : any) : IReduxAction;
+	setAllowDelete(allow : boolean) : IReduxAction;
+	setAllowInsert(allow : boolean) : IReduxAction;
+	setAllowUpdate(allow : boolean) : IReduxAction;
+	setFilterObject(filterObject : object | null) : IReduxAction;
+	setFilterString(filterString : string) : IReduxAction;
+	setMaxRecords(maxRecords : number) : IReduxAction;
+	setSortOrder(sortOrder : Array<object> | null) : IReduxAction;
+	setWhereClause(whereClause : string) : IReduxAction;
+	setWhereObject(whereObject : object | null) : IReduxAction;
 }
 
 export interface IStorageEngine {
