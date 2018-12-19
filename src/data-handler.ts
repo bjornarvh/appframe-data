@@ -17,6 +17,7 @@ export class DataHandler implements IDataHandler {
 	groupBy : Array<string> | null;
 	timeout : number;
 
+	private retrieveCounter : number = 0;
 	private previousController : AbortController | null = null;
 
 	constructor(options : DataHandlerOptions = {}) {
@@ -48,7 +49,7 @@ export class DataHandler implements IDataHandler {
 	 * @param data Record that should be added
 	 * @param callback Callback when the record has been created
 	 */
-	create(data : object, callback : Function) : Promise<object | boolean> {
+	create(data : object, callback? : Function) : Promise<object | boolean> {
 		return this.request('create', data, callback);
 	}
 	
@@ -58,7 +59,7 @@ export class DataHandler implements IDataHandler {
 	 * @param data Object containing primkey of the record to delete
 	 * @param callback Callback when the record has been created/an error has occured
 	 */
-	destroy(data : IRecordDataOptions, callback : Function) : Promise<object | boolean> {
+	destroy(data : IRecordDataOptions, callback? : Function) : Promise<object | boolean> {
 		return this.request('destroy', data, callback);
 	}
 	
@@ -68,7 +69,7 @@ export class DataHandler implements IDataHandler {
 	 * @param data Request parameters
 	 * @param callback Callback when the record has been created/an error has occured
 	 */
-	retrieve(data : DataObjectParameters, callback : Function) : Promise<object | boolean> {
+	retrieve(data : DataObjectParameters, callback? : Function) : Promise<object | boolean> {
 		return this.request('retrieve', data, callback);
 	}
 	
@@ -78,21 +79,23 @@ export class DataHandler implements IDataHandler {
 	 * @param data Object containing PrimKey and any updated fields.
 	 * @param callback Callback when the record has been updated/an error has occured
 	 */
-	update(data : IRecordDataOptions, callback : Function) : Promise<object | boolean> {
+	update(data : IRecordDataOptions, callback? : Function) : Promise<object | boolean> {
 		return this.request('update', data, callback);
 	}
 	
-	request(type : string, data : object, callback : Function) : Promise<object | false> {
+	request(type : string, data : object, callback? : Function) : Promise<object | false> {
 		return new Promise((resolve, reject) => {
 			const options : RequestInit = {
 				body: JSON.stringify(data),
 				method: 'POST',
 				headers: {
-					'Content-Type': 'application/json; charset=utf-8'
+					'Content-Type': 'application/json; charset=utf-8',
+					'X-Requested-With': 'XMLHttpRequest'
 				}
 			};
 
 			let controller : AbortController | null = null;
+			let requestId = 0;
 		
 			let url = `/${type}/${this.articleId}/${this.dataSourceId}`;
 			let isTimedOut = false;
@@ -104,8 +107,12 @@ export class DataHandler implements IDataHandler {
 			if (this.groupBy) {
 				url += '/' + this.groupBy;
 			}
+
+			if (type === 'retrieve') {
+				requestId = ++this.retrieveCounter;
+			}
 		
-			if (typeof AbortController !== 'undefined') {
+			if (type === 'retrieve' && typeof AbortController !== 'undefined') {
 				if (this.previousController) {
 					this.previousController.abort();
 				}
@@ -130,8 +137,11 @@ export class DataHandler implements IDataHandler {
 				.then(result => {
 					clearTimeout(timeout);
 					if (isTimedOut) {
+						console.log('was timed out', options.body);
 						return Promise.resolve(false);
-					} else if (controller && this.previousController !== controller) {
+					} else if (type === 'retrieve' && controller && this.previousController !== controller) {
+						return Promise.resolve(false);
+					} else if (type === 'retrieve' && requestId !== this.retrieveCounter) {
 						return Promise.resolve(false);
 					}
 		

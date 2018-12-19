@@ -22,12 +22,27 @@ describe('DataHandler', () => {
 		handler = new DataHandler({
 			dataSourceId: 'dsTest'
 		});
+		handler.timeout = 30000;
 		fetchMock.resetMocks();
 	});
 
 	it('gets article ID from global AF object', async () => {
 		// global AF object defined in jest.config.js
 		expect(handler.articleId).toEqual('test-article');
+	});
+
+	it('sends an X-Requested-With header', async() => {
+		const mockFunction = fetchMock.mockResponseOnce(JSON.stringify({ success: true }));
+		await handler.retrieve({});
+
+		// @ts-ignore
+		expect(mockFunction.mock.calls.length).toBe(1);
+		// @ts-ignore
+		const [path,options] = mockFunction.mock.calls[0];
+		expect(path).toBe('/retrieve/test-article/dsTest');
+		expect(options).toHaveProperty('headers');
+		expect(options.headers).toHaveProperty('X-Requested-With');
+		expect(options.headers['X-Requested-With']).toBe('XMLHttpRequest');
 	});
 
 	it('can create records', async () => {
@@ -121,5 +136,24 @@ describe('DataHandler', () => {
 
 		expect(result).toBe(false);
 		expect(callback).toBeCalledTimes(0);
+	});
+
+	it('aborts if retrieve request is made before previous retrieve request finishes', async () => {
+		const callback = jest.fn(() => null);
+		fetchMock.mockResponse(() => new Promise(resolve => {
+			setTimeout(() => {
+				resolve({ body: JSON.stringify({ success: true }) });
+			}, 25);
+		}));
+
+		const req1 = handler.retrieve({ filterString: 'req1' }, callback);
+		const req2 = handler.retrieve({ filterString: 'req2' }, callback);
+
+		const res1 = await req1;
+		const res2 = await req2;
+
+		expect(callback).toBeCalledTimes(1);
+		expect(res1).toBe(false);
+		expect(res2).toBe(true);
 	});
 });
