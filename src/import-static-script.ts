@@ -34,7 +34,10 @@ class OptionsCollection {
 function createDataConstructors(collection : OptionsCollection) {
 	return {
 		...window.af,
-		article: window.af.article,
+		article: {
+			dataObjects: {},
+			procedures: {}
+		},
 		common: {
 			expose: () => null
 		},
@@ -47,40 +50,19 @@ function createDataConstructors(collection : OptionsCollection) {
 	}
 }
 
-function importStaticScript(articleId : string) : Promise<OptionsCollection> {
+export function importStaticScript(articleId : string) : Promise<OptionsCollection> {
 	return new Promise((resolve, reject) => {
 		fetch(`/file/article/static-script/${articleId}`)
 			.then(res => res.text())
 			.then(text => {
-				const script = document.createElement('script');
-				const collection = new OptionsCollection();
-				const oldAf = window.af;
-				window.af = createDataConstructors(collection);
-
-				const destructor = () => {
-					script.onload = null;
-					script.remove();
-					URL.revokeObjectURL(script.src);
-					script.src = '';
-					window.af = oldAf;
-				};
-
-				script.onerror = () => {
-					reject(new Error(`Failed to import static script for article '${articleId}.`));
-					destructor();
-				};
-	
-				script.onload = () => {
+				try {
+					const collection = new OptionsCollection();
+					const af = createDataConstructors(collection);
+					eval(text);
 					resolve(collection);
-					destructor();
-				};
-
-				const blob = new Blob([text], { type: 'text/javascript' });
-				script.src = URL.createObjectURL(blob);
-
-				document.head.appendChild(script);
+				} catch(err) {
+					reject(new Error(`Failed to import static script for article '${articleId}': ${err.message}`));
+				}
 			});
 	});
 }
-
-export { importStaticScript };
