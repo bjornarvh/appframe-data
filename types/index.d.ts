@@ -165,6 +165,12 @@ export type PrivateDataObjectOptions = {
 	uniqueIdField : string;
 }
 
+export type ProcedureOptions = {
+	articleId : string;
+	procedureId : string;
+	timeout : number;
+}
+
 export interface IRecordSource {
 	[index : string] : Function;
 	getFilterObject() : object | null;
