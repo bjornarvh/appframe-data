@@ -1,16 +1,24 @@
 import { ListenerFn } from "eventemitter3";
 
 export interface Appframe {
-	article : AfArticle
+	article : AfArticle;
+	common: AfCommon;
+	DataObject : Function;
+	Procedure : Function;
 }
 
 export interface AfDataObjects {
 	[index : string] : IDataObject | IReduxDataObject
 }
 
+export interface AfCommon {
+	expose(path : string, obj : any) : any;
+}
+
 export interface AfArticle {
-	id : string,
+	id : string;
 	dataObjects: AfDataObjects;
+
 }
 
 export interface IDataHandler {

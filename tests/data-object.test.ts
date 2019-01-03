@@ -3,7 +3,9 @@ import fetchMock from 'jest-fetch-mock';
 
 describe('DataObject', () => {
 	it('has a functioning recordSource helper', () => {
-		const dataObject = new DataObject({});
+		const dataObject = new DataObject({
+			dataSourceId: 'hei'
+		});
 		const params = [
 			['filterObject', 'getFilterObject', 'setFilterObject'],
 			['filterString', 'getFilterString', 'setFilterString'],
@@ -31,7 +33,9 @@ describe('DataObject', () => {
 });
 
 describe('DataObject editing', () => {
-	let dataObject = new DataObject();
+	let dataObject = new DataObject({
+		dataSourceId: 'hei'
+	});
 
 	beforeEach(() => {
 		dataObject = new DataObject({
