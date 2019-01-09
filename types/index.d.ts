@@ -22,10 +22,10 @@ export interface AfArticle {
 }
 
 export interface IDataHandler {
-	create(data : object, callback : Function) : Promise<object | boolean>;
-	destroy(data : object, callback : Function) : Promise<object | boolean>;
-	retrieve(data : object, callback : Function) : Promise<object | boolean>;
-	update(data : object, callback : Function) : Promise<object | boolean>;
+	create(data : object, callback? : Function) : Promise<object | boolean>;
+	destroy(data : object, callback? : Function) : Promise<object | boolean>;
+	retrieve(data : object, callback? : Function) : Promise<object | boolean>;
+	update(data : object, callback? : Function) : Promise<object | boolean>;
 }
 
 export type DataHandlerOptions = {
