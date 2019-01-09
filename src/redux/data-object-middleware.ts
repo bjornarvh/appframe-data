@@ -1,6 +1,6 @@
 import { Store } from 'redux';
 import { Appframe, IReduxAction, IReduxState } from '../../types';
-import { ReduxDataObject } from './redux-data-object';
+import { ReduxDataObject } from './data-object';
 
 declare const af : Appframe;
 
