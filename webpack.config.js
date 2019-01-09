@@ -5,8 +5,10 @@ const config = {
 	entry: {
 		'data-handler': './src/data-handler.ts', 
 		'data-object': './src/data-object.ts',
-		'redux-data-object': './src/redux-data-object.ts',
-		'redux-data-object-reducer': './src/data-object-reducer.ts'
+		'import-static-script': './src/import-static-script.ts',
+		'redux-data-object': './src/redux/data-object.ts',
+		'redux-data-object-reducer': './src/redux/data-object-reducer.ts',
+		'simple-data-object': './src/simple-data-object.ts',
 	},
 	module: {
 		rules: [
