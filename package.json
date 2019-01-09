@@ -13,7 +13,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bjornarvh/appframe-data.git"
+    "url": "git+https://github.com/olenbetong/appframe-data.git"
   },
   "keywords": [
     "appframe",
@@ -22,9 +22,9 @@
   "author": "Bjørnar Vister Hansen <bvh@olenbetong.no>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/bjornarvh/appframe-data/issues"
+    "url": "https://github.com/olenbetong/appframe-data/issues"
   },
-  "homepage": "https://github.com/bjornarvh/appframe-data#readme",
+  "homepage": "https://github.com/olenbetong/appframe-data#readme",
   "dependencies": {
     "deepmerge": "^3.0.0",
     "eventemitter3": "^3.1.0"
