@@ -56,4 +56,7 @@ class SimpleDataObject<T> {
 	}
 }
 
-export { SimpleDataObject };
+export {
+	DataHandler,
+	SimpleDataObject
+};
