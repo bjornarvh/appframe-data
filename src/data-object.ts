@@ -10,7 +10,6 @@ import {
 	DataObjectOptions,
 	IDataHandler,
 	IDataObject,
-	IDataObjectField,
 	FieldDefinition,
 	PrivateDataObjectOptions,
 	IRecordSource,
@@ -251,7 +250,7 @@ class DataObject extends EventEmitter implements IDataObject {
 		return null;
 	}
 
-	getFields() : Array<IDataObjectField> {
+	getFields() : Array<FieldDefinition> {
 		throw new Error('Not implemented');
 	}
 

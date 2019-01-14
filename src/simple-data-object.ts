@@ -9,7 +9,7 @@ import {
 	PrivateDataObjectOptions,
 } from '../types';
 
-class SimpleDataObject {
+class SimpleDataObject<T> {
 	private _options : PrivateDataObjectOptions;
 	private _dataHandler : IDataHandler;
 
@@ -22,27 +22,25 @@ class SimpleDataObject {
 		});
 	}
 
-	async getData(params : DataObjectParameters) {
+	async getData(params : DataObjectParameters) : Promise<Array<any> | null> {
 		const raw = await this._dataHandler.retrieve(params);
-		/*
-		dataHandler.retrieve({ filterString: '', whereClause: filter }, function(error, data) {
-			if (error !== null) {
-					reject(error);
-			} else {
-					var records = [];
 
-					for (let item of data) {
-							var record = {};
-							item.forEach((value, idx) => {
-									record[fields[idx].name] = value;
-							});
-							records.push(record);
-					}
-					
-					resolve(records);
+		if (typeof raw === 'object' && raw instanceof Array) {
+			const records = [];
+
+			for (let item of raw) {
+				const record : any = {};
+				item.forEach((value : any, idx : number) => {
+					record[this._options.fields[idx].name] = value;
+				});
+
+				records.push(record);
 			}
-	});
-});*/
+	
+			return records;
+		}
+		
+		return null;
 	}
 
 	async create(record : object) : Promise<object | boolean> {

@@ -54,7 +54,7 @@ export interface IDataObject {
 	getDataLength() : number;
 	getDataSourceId() : string | null;
 	getDirtyData(index? : number, field? : string) : any;
-	getFields(field? : string) : Array<IDataObjectField> | IDataObjectField;
+	getFields(field? : string) : Array<FieldDefinition> | FieldDefinition;
 	getGroupBy() : string;
 	getLinkFields() : object;
 	getMasterDataObject() : IDataObject | null;
@@ -84,16 +84,12 @@ export interface IDataObject {
 	setParameter(parameter : string, value : any) : any;
 }
 
-export interface IDataObjectField {
-
-}
-
 export type DataObjectOptions = {
 	allowDelete ? : boolean;
 	allowUpdate? : boolean;
 	allowInsert? : boolean;
 	articleId? : string;
-	fields? : Array<IDataObjectField>;
+	fields? : Array<FieldDefinition>;
 	dataHandler? : IDataHandler;
 	dataSourceId : string;
 	disableAutoload? : boolean;
@@ -160,7 +156,7 @@ export type PrivateDataObjectOptions = {
 	dataSourceId : string;
 	disableAutoload : boolean;
 	dynamicLoading : boolean;
-	fields : Array<IDataObjectField>;
+	fields : Array<FieldDefinition>;
 	groupBy : object | null;
 	linkFields : object | null;
 	masterDataObject : IDataObject | null;
