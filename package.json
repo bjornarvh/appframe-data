@@ -1,6 +1,6 @@
 {
   "name": "@olenbetong/appframe-data",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Classes for working with AppframeWeb data sources outside Appframe articles.",
   "main": "dist/data-object.min.js",
   "scripts": {
